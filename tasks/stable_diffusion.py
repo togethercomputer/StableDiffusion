@@ -16,7 +16,7 @@ from diffusers import StableDiffusionPipeline
 import torch
 
 
-class FastStableDiffusion():
+class FastStableDiffusion(FastInferenceInterface):
     def __init__(self, model_name: str, args=None) -> None:
         super().__init__(model_name, args)
         self.pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_type=torch.float16, revision="fp16")
@@ -62,4 +62,6 @@ class FastStableDiffusion():
 
 if __name__ == "__main__":
     fip = FastStableDiffusion(model_name="stable_diffusion")
-    fip.infer("job", {"args":"ss"})
+    fip.start()
+    # to test...
+    # fip.infer("random_id", {"arg_key":"arg_val"})

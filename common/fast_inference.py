@@ -18,12 +18,6 @@ class FastInferenceInterface:
         job_id, job_payload = str(instruction).split(":", 1)
         self.infer(job_id, job_payload)
         
-    def on_error(self, ws, msg):
-        print(msg)
-
-    def on_open(self, ws):
-        ws.send(f"JOIN:{self.model_name}")
-
     def start(self):
         nats_url = os.environ.get("NATS_URL", "localhost:8092/my_coord")
         async def listen():
