@@ -15,7 +15,6 @@ from loguru import logger
 from diffusers import StableDiffusionPipeline
 import torch
 
-
 class FastStableDiffusion(FastInferenceInterface):
     def __init__(self, model_name: str, args=None) -> None:
         super().__init__(model_name, args if args is not None else {})
@@ -28,6 +27,6 @@ class FastStableDiffusion(FastInferenceInterface):
 
 if __name__ == "__main__":
     fip = FastStableDiffusion(model_name="stable_diffusion", args={
-        "coordinator":TogetherWeb3(coordinator="localhost")
+        "coordinator":TogetherWeb3(coordinator="localhost", websocket_url="localhost:8093")
     })
     fip.start()

@@ -243,22 +243,23 @@ class ImageModelInferenceRequest(Job):
     API roughly based on https://github.com/CompVis/stable-diffusion
     TODO: add other parameters
     """
-    model: str
-    prompt: str
+    request_type: str = RequestTypeImageModelInference
+    model: str = ""
+    prompt: str = ""
 
     #: How wide of an image to generate.
-    width: Optional[int]
+    width: Optional[int] = 512
 
     #: How tall of an image to generate.
-    height: Optional[int]
+    height: Optional[int] = 512
 
     #: Input image.
-    image_base64: Optional[str]
+    image_base64: Optional[str] = ""
 
-    downsampling_factor: Optional[float]
+    downsampling_factor: Optional[float] = 0
 
     # Number of samples to draw.
-    n: Optional[int]
+    n: Optional[int] = 1
 
 
 ############################################################
