@@ -1,0 +1,13 @@
+{
+    "recipe":"image.def",
+    "target":"together.StableDiffusion.sif",
+    "scripts": {
+        "start":"python3 /app/tasks/stable_diffusion.py",
+        "bash": "/bin/bash"
+    },
+    "bind": {
+        "/model": "/root/.cache/huggingface/diffusers/models--CompVis--stable-diffusion-v1-4/",
+        "/app/results": "/tmp" 
+    },
+    "nvidia": true
+}

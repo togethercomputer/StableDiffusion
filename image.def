@@ -1,0 +1,8 @@
+Bootstrap: localimage
+From: flash_attention.sif
+
+%files
+    app /app
+    
+%post
+    pip3 install -r /app/requirements.txt

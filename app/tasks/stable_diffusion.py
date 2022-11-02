@@ -26,10 +26,6 @@ class FastStableDiffusion(FastInferenceInterface):
         self.pipe = self.pipe.to("cuda")
 
     def dispatch_request(self, args, env) -> Dict:
-        print("dispatch_request")
-        print(args)
-        print(env)
-       
         prompt = args[0]["prompt"] 
         output = self.pipe(
             prompt[0] if isinstance(prompt, list) else prompt,

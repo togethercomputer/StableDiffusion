@@ -4,8 +4,8 @@ from dacite import from_dict
 import timeit
 sys.path.append("./")
 
-from common.together_web3.computer import ImageModelInferenceRequest
-from common.together_web3.together import TogetherWeb3
+from app.common.together_web3.computer import ImageModelInferenceRequest
+from app.common.together_web3.together import TogetherWeb3
 
 async def test():
     together_web3 = TogetherWeb3()
@@ -26,4 +26,3 @@ if __name__=="__main__":
     asyncio.run(test())
     end = timeit.default_timer()
     print("measure time: {}s".format( (end-start) ))
-
