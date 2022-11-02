@@ -20,6 +20,8 @@ from .computer import (
     EventTypeNewBlock,
     EventTypeResult,
     Job,
+    ImageModelInferenceRequest,
+    ImageModelInferenceResult,
     LanguageModelInferenceRequest,
     LanguageModelInferenceResult,
     MatchEvent,
@@ -27,6 +29,7 @@ from .computer import (
     OfferEnvelope,
     OfferTypeServiceBid,
     RequestTypeLanguageModelInference,
+    RequestTypeImageModelInference,
     ResourceTypeService,
     ResultEnvelope,
     ResultEvent,
@@ -301,3 +304,20 @@ class TogetherWeb3:
         )
         result_json = await self.resolve_job(service, request, options)
         return from_dict(data_class=LanguageModelInferenceResult, data=result_json["result"])
+
+    async def image_model_inference(
+        self,
+        request: ImageModelInferenceRequest,
+        options: Optional[ResolveOptions] = None,
+    ) -> ImageModelInferenceResult:
+
+        service = from_dict(
+            data_class=Service,
+            data={
+                "resource_type": ResourceTypeService,
+                "service_name": RequestTypeImageModelInference,
+                "tags": {"model": request.model},
+            },
+        )
+        result_json = await self.resolve_job(service, request, options)
+        return from_dict(data_class=ImageModelInferenceResult, data=result_json["result"])

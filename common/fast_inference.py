@@ -71,7 +71,8 @@ class FastInferenceInterface:
                 gpu_type="",
                 gpu_memory=0,
                 resource_type=ResourceTypeInstance,
-                tags={}),
+                tags={}
+            ),
             config={
                 "model": "StableDiffusion",
                 "request_type": RequestTypeImageModelInference,

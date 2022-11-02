@@ -43,6 +43,7 @@ class FastStableDiffusion(FastInferenceInterface):
             image.save(buffered, format="JPEG")
             img_str = base64.b64encode(buffered.getvalue()).decode('ascii')
             choices.append(ImageModelInferenceChoice(img_str))
+        
         return {
             "result_type": RequestTypeImageModelInference,
             "choices": choices,
