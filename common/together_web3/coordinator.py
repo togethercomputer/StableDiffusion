@@ -18,6 +18,7 @@ class Join:
     host_ip: str
     interface_ip: List[str]
     instance: Instance
+    config: Optional[Dict[str, Any]]
 
 
 @dataclass

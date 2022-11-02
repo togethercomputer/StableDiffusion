@@ -1,7 +1,8 @@
-from typing import Any, Callable, Dict, List, Optional, cast
+from typing import Any, Callable, Dict, List, Optional, Union, cast
 from typing_extensions import Protocol
 
-from dataclasses import dataclass
+import datetime
+from dataclasses import dataclass, field
 
 from web3.method import Method, default_root_munger
 from web3.module import Module
@@ -152,6 +153,7 @@ class ServiceAsk(Offer):
 
 @dataclass
 class ServiceBid(Offer):
+    deadline: Optional[datetime.datetime]
     service: Service
     max_service_price: ServicePrice
     job: Job
@@ -167,6 +169,7 @@ class InstanceAsk(Offer):
 
 @dataclass
 class InstanceBid(Offer):
+    deadline: Optional[datetime.datetime]
     instance: Instance
     max_instance_price: InstancePrice
     num_instances: int
@@ -207,7 +210,7 @@ class LanguageModelInferenceRequest(Job):
     """
     request_type: str = RequestTypeLanguageModelInference
     model: str = ""
-    prompt: str = ""
+    prompt: Union[str, List[str]] = cast(Union[str, List[str]], field(default_factory=list))
 
     #: Maximum number of tokens to generate.
     max_tokens: Optional[int] = None
@@ -243,23 +246,22 @@ class ImageModelInferenceRequest(Job):
     API roughly based on https://github.com/CompVis/stable-diffusion
     TODO: add other parameters
     """
-    request_type: str = RequestTypeImageModelInference
-    model: str = ""
-    prompt: str = ""
+    model: str
+    prompt: Union[str, List[str]]
 
     #: How wide of an image to generate.
-    width: Optional[int] = 512
+    width: Optional[int]
 
     #: How tall of an image to generate.
-    height: Optional[int] = 512
+    height: Optional[int]
 
     #: Input image.
-    image_base64: Optional[str] = ""
+    image_base64: Optional[str]
 
-    downsampling_factor: Optional[float] = 0
+    downsampling_factor: Optional[float]
 
     # Number of samples to draw.
-    n: Optional[int] = 1
+    n: Optional[int]
 
 
 ############################################################
