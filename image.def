@@ -1,5 +1,5 @@
-Bootstrap: localimage
-From: flash_attention.sif
+Bootstrap: docker
+From: danfu09/diffusers:0.1
 
 %files
     app /app

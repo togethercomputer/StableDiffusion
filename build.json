@@ -3,7 +3,8 @@
     "target":"together.StableDiffusion.sif",
     "scripts": {
         "start":"python3 /app/tasks/stable_diffusion.py",
-        "bash": "/bin/bash"
+        "bash": "/bin/bash",
+        "benchmark": "python3 /app/inference_test.py --batch_size 8"
     },
     "bind": {
         "/model": "/root/.cache/huggingface/diffusers/models--CompVis--stable-diffusion-v1-4/",
