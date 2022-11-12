@@ -1,10 +1,12 @@
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Union, cast
 
 import asyncio
+import dataclasses
 import json
 import logging
+import random
 from asyncio import Future, Task
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 from enum import Enum
 
 from dacite import from_dict
@@ -19,17 +21,17 @@ from .computer import (
     EventTypeMatch,
     EventTypeNewBlock,
     EventTypeResult,
-    Job,
     ImageModelInferenceRequest,
     ImageModelInferenceResult,
+    Job,
     LanguageModelInferenceRequest,
     LanguageModelInferenceResult,
     MatchEvent,
     NewBlockEvent,
     OfferEnvelope,
     OfferTypeServiceBid,
-    RequestTypeLanguageModelInference,
     RequestTypeImageModelInference,
+    RequestTypeLanguageModelInference,
     ResourceTypeService,
     ResultEnvelope,
     ResultEvent,
@@ -53,6 +55,14 @@ class ResolveOptions:
 @dataclass
 class TogetherClientOptions:
     maintainConnection: Optional[bool] = None
+
+
+def asdict_filter_none(x):
+    return asdict(x, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})
+
+
+def dataclass_replace_none_with_default_values(data_class, data):
+    return from_dict(data_class=data_class, data=asdict_filter_none(data))
 
 
 def websocket_url_from_http_url(http_url: str) -> str:
@@ -220,6 +230,7 @@ class TogetherWeb3:
 
     async def update_offer(self, update: OfferEnvelope) -> str:
         """Publishes an Offer to the network."""
+        # logger.info("update_offer: %s", asdict(update))
         offer_id = self.together.updateOffer(asdict(update), self._subscription_id)
         return offer_id
 
@@ -236,6 +247,7 @@ class TogetherWeb3:
 
         # Send the offer to market.
         offer_id = await self.update_offer(offer)
+        # logger.info("resolve_offer, offer_id: %s", offer_id)
 
         # Listen for MatchEvent with our offer_id.
         if options and options.match_callback:
@@ -269,16 +281,17 @@ class TogetherWeb3:
             data_class=ServiceBid,
             data={
                 "offer_type": OfferTypeServiceBid,
-                "service": service,
-                "job": job,
-                "address": AddressNil,
                 "block_height": tip_block.block_height,
                 "block_nonce": tip_block.block_nonce,
+                "nonce": random.getrandbits(32),
+                "address": AddressNil,
                 "market_address": tip_block.market_address,
+                "service": service,
                 "max_service_price": from_dict(
                     data_class=ServicePrice,
                     data={"base_price": 0},
                 ),
+                "job": job,
             }
         )
         offer_envelope = from_dict(
@@ -287,22 +300,28 @@ class TogetherWeb3:
         )
         return await self.resolve_offer(offer_envelope, options)
 
+    async def resolve_inference(
+        self,
+        request: Union[ImageModelInferenceRequest, LanguageModelInferenceRequest],
+        options: Optional[ResolveOptions] = None,
+    ) -> Dict[str, Any]:
+        service = from_dict(
+            data_class=Service,
+            data={
+                "resource_type": ResourceTypeService,
+                "service_name": request.model,
+            },
+        )
+        result_json = await self.resolve_job(service, request, options)
+        return result_json
+
     async def language_model_inference(
         self,
         request: LanguageModelInferenceRequest,
         options: Optional[ResolveOptions] = None,
     ) -> LanguageModelInferenceResult:
         """Publishes and manages a LanguageModelInferenceRequest and the resulting LanguageModelInferenceResult."""
-
-        service = from_dict(
-            data_class=Service,
-            data={
-                "resource_type": ResourceTypeService,
-                "service_name": RequestTypeLanguageModelInference,
-                "tags": {"model": request.model},
-            },
-        )
-        result_json = await self.resolve_job(service, request, options)
+        result_json = await self.resolve_inference(request, options)
         return from_dict(data_class=LanguageModelInferenceResult, data=result_json["result"])
 
     async def image_model_inference(
@@ -310,14 +329,5 @@ class TogetherWeb3:
         request: ImageModelInferenceRequest,
         options: Optional[ResolveOptions] = None,
     ) -> ImageModelInferenceResult:
-
-        service = from_dict(
-            data_class=Service,
-            data={
-                "resource_type": ResourceTypeService,
-                "service_name": RequestTypeImageModelInference,
-                "tags": {"model": request.model},
-            },
-        )
-        result_json = await self.resolve_job(service, request, options)
-        return from_dict(data_class=ImageModelInferenceResult, data=result_json["result"])
+        result_json = await self.resolve_inference(request, options)
+        return from_dict(data_class=ImageModelInferenceResult, data=result_json["result"]['data'])

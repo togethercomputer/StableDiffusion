@@ -35,9 +35,15 @@ ResourceTypeService = "service"
 
 
 @dataclass
-class Job:
+class Job():
     """Base class for work fulfilled by a Service."""
-    request_type: str
+    request_type: Optional[str]
+
+
+@dataclass
+class ResultData(Dict[str, Any]):
+    """Base class for results returned by a Service."""
+    result_type: str
 
 
 @dataclass
@@ -120,12 +126,6 @@ class BlockHeader:
     market_address: Address
 
 
-@dataclass
-class Block(BlockHeader):
-    transactions: List[Event]
-    signature: Optional[Signature]
-
-
 ############################################################
 # Offers
 
@@ -183,18 +183,24 @@ class InstanceBid(Offer):
 @dataclass
 class Match:
     match_type: str
+    ask_address: str
+    bid_address: str
     ask_offer_id: str
     bid_offer_id: str
+    ask_signature: Optional[str]
+    bid_signature: Optional[str]
 
 
 @dataclass
 class MatchServiceOffer(Match):
+    match_price: ServicePrice
     supply_service: ServiceAsk
     demand_service: ServiceBid
 
 
 @dataclass
 class MatchInstanceOffer(Match):
+    match_price: InstancePrice
     supply_instance: InstanceAsk
     demand_instance: InstanceBid
 
@@ -248,7 +254,7 @@ class ImageModelInferenceRequest(Job):
     """
     request_type: str = RequestTypeImageModelInference
     model: str = ""
-    prompt: Union[str, List[str]] = None
+    prompt: Union[str, List[str]] = ""
 
     #: How wide of an image to generate.
     width: Optional[int] = 512
@@ -264,18 +270,20 @@ class ImageModelInferenceRequest(Job):
     # Number of samples to draw.
     n: Optional[int] = None
 
-
+    
 ############################################################
 # Results
 
 @dataclass
 class Result:
+    ask_address: str
+    bid_address: str
     ask_offer_id: str
     bid_offer_id: str
     match_id: str
-    result_type: str
     partial: Optional[bool]
-
+    data: Dict[str, Any]
+    
 
 @dataclass
 class LanguageModelInferenceChoice:
@@ -285,7 +293,7 @@ class LanguageModelInferenceChoice:
 
 
 @dataclass
-class LanguageModelInferenceResult(Result):
+class LanguageModelInferenceResult(ResultData):
     choices: List[LanguageModelInferenceChoice]
 
 
@@ -295,10 +303,9 @@ class ImageModelInferenceChoice:
 
 
 @dataclass
-class ImageModelInferenceResult(Result):
+class ImageModelInferenceResult(ResultData):
     choices: List[ImageModelInferenceChoice]
-
-
+    result_type: str
 ############################################################
 # Envelopes
 
@@ -345,6 +352,11 @@ class ResultEvent(Event, ResultEnvelope):
 @dataclass
 class EventEnvelope(Envelope):
     events: List[Event]
+
+
+@dataclass
+class Block(BlockHeader, EventEnvelope):
+    pass
 
 
 ############################################################
