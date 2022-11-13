@@ -31,12 +31,10 @@ class FastStableDiffusion(FastInferenceInterface):
             prompt[0] if isinstance(prompt, list) else prompt,
             #num_inference_steps=args[0].get("steps", 50),
         )
-        print(output)
-
         choices = []
         for image in output.images:
             buffered = BytesIO()
-            image.save(buffered, format="JPEG")
+            image.save(buffered, format="PNG")
             img_str = base64.b64encode(buffered.getvalue()).decode('ascii')
             choices.append(ImageModelInferenceChoice(img_str))
         return {
