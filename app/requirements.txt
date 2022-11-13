@@ -1,3 +1,9 @@
 web3
 dacite
 loguru
+torch
+transformers
+torchvision
+diffusers
+accelerate
+matplotlib
