@@ -270,7 +270,7 @@ class ImageModelInferenceRequest(Job):
     # Number of samples to draw.
     n: Optional[int] = None
 
-    
+
 ############################################################
 # Results
 
@@ -283,7 +283,7 @@ class Result:
     match_id: str
     partial: Optional[bool]
     data: Dict[str, Any]
-    
+
 
 @dataclass
 class LanguageModelInferenceChoice:
@@ -305,7 +305,8 @@ class ImageModelInferenceChoice:
 @dataclass
 class ImageModelInferenceResult(ResultData):
     choices: List[ImageModelInferenceChoice]
-    result_type: str
+
+
 ############################################################
 # Envelopes
 

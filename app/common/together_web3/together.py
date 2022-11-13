@@ -87,9 +87,11 @@ class TogetherWeb3:
     _subscription_id: Optional[str] = None
     _on_subscription_id: "List[Future[str]]" = []
     _on_new_block_header: "List[Future[BlockHeader]]" = []
+    _on_disconnect: "List[Callable[[], Union[None, Awaitable[None]]]]" = []
     _on_match_event: "List[Callable[[MatchEvent, Dict[str, Any]], Union[None, Awaitable[None]]]]" = []
     _on_match_for_bid: "Dict[str, List[Callable[[Dict[str, Any]], None]]]" = {}
     _on_result_for_bid: "Dict[str, List[Future[Dict[str, Any]]]]" = {}
+    _handle_disconnect_delay = 2
 
     def __init__(
         self,
@@ -121,32 +123,33 @@ class TogetherWeb3:
                 self._handle_events(f"{rpc_namespace}_subscribe", "events", self._handle_event))
 
     async def _handle_events(self, method: str, event: str, handler: Callable[[Dict[str, Any]], Awaitable[None]]) -> None:
-        while True:
-            ws = await connect(self.websocket_url)
-            await ws.send(f'{{"jsonrpc": "2.0", "id": 1, "method": "{method}", "params": ["{event}"]}}')
-            message = await ws.recv()
-            subscription_response = json.loads(message)
-            self._subscription_id = subscription_response["result"]
-            resolve_subscription_id = self._on_subscription_id
-            self._on_subscription_id = []
-            for future_subscription_id in resolve_subscription_id:
-                future_subscription_id.set_result(
-                    self._subscription_id if self._subscription_id else "")
-            try:
-                while True:
-                    message = await asyncio.wait_for(ws.recv(), 1073741824)
-                    response = json.loads(message)
-                    result = response["params"]["result"]
-                    # logger.info("_handle_events: %s", result)
-                    await handler(result)
-            except asyncio.CancelledError:
-                break
-            except BaseException:
-                logging.exception("handle_events")
-            finally:
-                await ws.close()
+        ws = await connect(self.websocket_url)
+        await ws.send(f'{{"jsonrpc": "2.0", "id": 1, "method": "{method}", "params": ["{event}"]}}')
+        message = await ws.recv()
+        subscription_response = json.loads(message)
+        self._subscription_id = subscription_response["result"]
+        resolve_subscription_id = self._on_subscription_id
+        self._on_subscription_id = []
+        for future_subscription_id in resolve_subscription_id:
+            future_subscription_id.set_result(
+                self._subscription_id if self._subscription_id else "")
+        try:
+            while True:
+                message = await asyncio.wait_for(ws.recv(), 1073741824)
+                response = json.loads(message)
+                result = response["params"]["result"]
+                # logger.info("_handle_events: %s", result)
+                await handler(result)
+        except asyncio.CancelledError:
+            return
+        except BaseException:
+            logging.exception("handle_events")
+        finally:
             self._subscription_id = None
-            await asyncio.sleep(2)
+            await ws.close()
+        if self._handle_disconnect_delay > 0:
+            await asyncio.sleep(self._handle_disconnect_delay)
+        await self._handle_disconnect()
 
     async def _handle_event(self, result: Dict[str, Any]) -> None:
         update = from_dict(data_class=EventEnvelope, data=result)
@@ -169,6 +172,13 @@ class TogetherWeb3:
                 result["events"][0])
         else:
             logger.error(f"unknown event_type: {update.events[0].event_type}")
+
+    async def _handle_disconnect(self) -> None:
+        """Dispatch callbacks listening for disconnect."""
+        for callback_disconnect in self._on_disconnect:
+            result = callback_disconnect()
+            if asyncio.iscoroutine(result) or asyncio.isfuture(result):
+                await result
 
     async def _handle_new_block_event(self, new_block: NewBlockEvent) -> None:
         """Resolve Futures listening for the next block."""

@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sys
 from enum import Enum
 from dacite import from_dict 
 from dataclasses import asdict
@@ -16,6 +17,7 @@ from .together_web3.computer import (
     LanguageModelInferenceResult,
     MatchEvent,
     ResourceTypeInstance,
+    Result,
     RequestTypeImageModelInference,
     RequestTypeLanguageModelInference,
     RequestTypeShutdown,
@@ -44,11 +46,12 @@ class FastInferenceInterface:
         future = asyncio.Future()
         asyncio.ensure_future(self._run_together_server())
         loop.run_forever()
-    
+
     async def _run_together_server(self) -> None:
+        self.coordinator._on_disconnect.append(self._join_local_coordinator)
+        self.coordinator._on_match_event.append(self.together_request)
         await self._join_local_coordinator()
         logger.info("Start _run_together_server")
-        self.coordinator._on_match_event.append(self.together_request)
         try:
             while not self.shutdown:
                 await asyncio.sleep(1)
@@ -57,49 +60,64 @@ class FastInferenceInterface:
         self._shutdown()
 
     async def _join_local_coordinator(self):
-        join = Join(
-            group_name="group1",
-            worker_name="worker1",
-            host_name="",
-            host_ip="",
-            interface_ip=[],
-            instance=Instance(
-                arch="",
-                os="",
-                cpu_num=0,
-                gpu_num=0,
-                gpu_type="",
-                gpu_memory=0,
-                resource_type=ResourceTypeInstance,
-                tags={}
-            ),
-            config={
-                "model": "StableDiffusion",
-                "request_type": RequestTypeImageModelInference,
-            },
-        )
-        self.subscription_id = await self.coordinator.get_subscription_id("coordinator")
-        args = self.coordinator.coordinator.join(
-            asdict(JoinEnvelope(join=join, signature=None)), self.subscription_id)
+        try:
+            logger.info("_join_local_coordinator")
+            join = Join(
+                group_name="group1",
+                worker_name="worker1",
+                host_name="",
+                host_ip="",
+                interface_ip=[],
+                instance=Instance(
+                    arch="",
+                    os="",
+                    cpu_num=0,
+                    gpu_num=0,
+                    gpu_type="",
+                    gpu_memory=0,
+                    resource_type=ResourceTypeInstance,
+                    tags={}
+                ),
+                config={
+                    "model": "StableDiffusion",
+                    "request_type": RequestTypeImageModelInference,
+                },
+            )
+            self.subscription_id = await self.coordinator.get_subscription_id("coordinator")
+            args = self.coordinator.coordinator.join(
+                asdict(JoinEnvelope(join=join, signature=None)), self.subscription_id)
+        except Exception as e:
+            logger.exception(f'_join_local_coordinator failed: {e}')
+
 
     async def together_request(self, match_event: MatchEvent, raw_event: Dict[str, Any]) -> None:
-        logger.info("together_request %s", raw_event)
+        logger.info(f"together_request {raw_event}")
         request_json = [raw_event["match"]["service_bid"]["job"]]
         response_json = self.dispatch_request(request_json, match_event)
         await self.send_result_back(match_event, response_json)
 
-    async def send_result_back(self, match_event: MatchEvent, result: Dict[str, Any]) -> None:
-        result["ask_offer_id"] = match_event.match.ask_offer_id
-        result["bid_offer_id"] = match_event.match.bid_offer_id
-        result["match_id"] = match_event.match_id
-        # logger.info("send_together_result %s", result)
-        await self.coordinator.update_result(ResultEnvelope(
-            result=from_dict(
-                data_class=ImageModelInferenceResult,
-                data=result,
-            ),
-            signature=None,
-        ))
+    async def send_result_back(self, match_event: MatchEvent, result_data: Dict[str, Any], partial: bool = False) -> None:
+        try:
+            #logger.info(f"send_result_back {result_data}")
+            result = {
+                "ask_address": match_event.match.ask_address,
+                "bid_address": match_event.match.bid_address,
+                "ask_offer_id": match_event.match.ask_offer_id,
+                "bid_offer_id": match_event.match.bid_offer_id,
+                "match_id": match_event.match_id,
+                "data": result_data,
+            }
+            if partial:
+                result["partial"] = True
+            await self.coordinator.update_result(ResultEnvelope(
+                result=from_dict(
+                    data_class=Result,
+                    data=result,
+                ),
+                signature=None,
+            ))
+        except Exception as e:
+            logger.error(f"send_result_back error: {e}")
 
     def _shutdown(self) -> None:
         logger.info("Shutting down")
