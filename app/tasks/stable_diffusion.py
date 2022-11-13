@@ -45,10 +45,11 @@ class FastStableDiffusion(FastInferenceInterface):
         }
 
 if __name__ == "__main__":
+    coord_url = os.environ.get("COORD_URL", "127.0.0.1")
     coordinator = TogetherWeb3(
         TogetherClientOptions(),
-        http_url="http://127.0.0.1:8092",
-        websocket_url="ws://127.0.0.1:8093/websocket"
+        http_url=f"http://{coord_url}:8092",
+        websocket_url=f"ws://{coord_url}:8093/websocket"
     )
     fip = FastStableDiffusion(model_name="stable_diffusion", args={
         "coordinator": coordinator,

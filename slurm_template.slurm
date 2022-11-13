@@ -15,5 +15,6 @@ cd {{working_dir}}
 set -o allexport && source .env
 cd StableDiffusion/app
 export HF_HOME={{working_dir}}/cache/HF
+export COORD_URL={{coord_url}}
 
 {{working_dir}}/venv/bin/python3 tasks/stable_diffusion.py
