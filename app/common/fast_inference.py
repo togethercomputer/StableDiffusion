@@ -1,6 +1,5 @@
 import asyncio
 import os
-import sys
 from enum import Enum
 from dacite import from_dict 
 from dataclasses import asdict
@@ -48,9 +47,9 @@ class FastInferenceInterface:
         loop.run_forever()
 
     async def _run_together_server(self) -> None:
-        self.coordinator._on_disconnect.append(self._join_local_coordinator)
+        self.coordinator._on_connect.append(self._join_local_coordinator)
         self.coordinator._on_match_event.append(self.together_request)
-        await self._join_local_coordinator()
+        self.coordinator.subscribe_events("coordinator")
         logger.info("Start _run_together_server")
         try:
             while not self.shutdown:
@@ -79,13 +78,13 @@ class FastInferenceInterface:
                     tags={}
                 ),
                 config={
-                    "model": "StableDiffusion",
+                    "model": self.model_name,
                     "request_type": RequestTypeImageModelInference,
                 },
             )
-            self.subscription_id = await self.coordinator.get_subscription_id("coordinator")
             args = self.coordinator.coordinator.join(
-                asdict(JoinEnvelope(join=join, signature=None)), self.subscription_id)
+                asdict(JoinEnvelope(join=join, signature=None)),
+                await self.coordinator.get_subscription_id())
         except Exception as e:
             logger.exception(f'_join_local_coordinator failed: {e}')
 
