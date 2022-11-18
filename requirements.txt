@@ -1,7 +1,7 @@
 web3
-dacite
-loguru
 torch
+loguru
+dacite
 transformers
 torchvision
 diffusers

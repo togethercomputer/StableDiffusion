@@ -1,0 +1,7 @@
+tcm: "129.132.93.86:8092"
+workload: StableDiffusion
+spec:
+  mode: inference
+  env:
+  - name: "COORD_URL":
+    value: "129.132.93.86"

@@ -1,11 +1,8 @@
-import asyncio
-import sys
-from dacite import from_dict
 import timeit
-sys.path.append("./")
-
-from app.common.together_web3.computer import ImageModelInferenceRequest
-from app.common.together_web3.together import TogetherWeb3
+import asyncio
+from dacite import from_dict
+from together_web3.together import TogetherWeb3
+from together_web3.computer import ImageModelInferenceRequest
 
 async def test():
     together_web3 = TogetherWeb3()
