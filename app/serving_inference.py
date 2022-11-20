@@ -1,19 +1,18 @@
 import os
-import sys
 import base64
 from io import BytesIO
 from typing import Dict
 import torch
-from together_worker.fast_inference import FastInferenceInterface
-from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
-from together_web3.together import TogetherWeb3, TogetherClientOptions
-from loguru import logger
+
 from diffusers import StableDiffusionPipeline
+from together_worker.fast_inference import FastInferenceInterface
+from together_web3.together import TogetherWeb3, TogetherClientOptions
+from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
 
 class FastStableDiffusion(FastInferenceInterface):
     def __init__(self, model_name: str, args=None) -> None:
         super().__init__(model_name, args if args is not None else {})
-        self.pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16, revision="fp16")
+        self.pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16, revision="fp16")
         self.pipe = self.pipe.to("cuda")
 
     def dispatch_request(self, args, env) -> Dict:
