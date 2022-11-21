@@ -35,7 +35,7 @@ WORKDIR /home/user
 ENV PIP_NO_CACHE_DIR=1
 
 # General packages that we don't care about the version
-RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops \
+RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker \
     && python -m spacy download en_core_web_sm
 # Core packages
 RUN pip install transformers==4.22.2 datasets==2.5.1
@@ -48,3 +48,5 @@ RUN git clone https://github.com/HazyResearch/flash-attention \
 # Set up diffusers
 RUN git clone https://github.com/HazyResearch/diffusers \
     && cd diffusers && pip install -e .
+
+COPY app /app
