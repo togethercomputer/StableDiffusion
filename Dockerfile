@@ -52,5 +52,4 @@ RUN git clone https://github.com/HazyResearch/diffusers \
     && cd diffusers && pip install -e .
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/
-COPY app /app
-WORKDIR /app
+COPY app app

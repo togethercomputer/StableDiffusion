@@ -1,0 +1,11 @@
+tcm: "129.132.93.86:8092"
+workload: StableDiffusion
+mode:
+  - name: inference
+    entrypoint: serve.sh
+spec:
+  env:
+  - name: "COORD_URL"
+    value: "129.132.93.86"
+  - name: "HF_HOME"
+    value: "/mnt/ds3lab-scratch/xiayao/cache/HF"

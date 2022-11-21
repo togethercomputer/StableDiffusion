@@ -1,20 +1,13 @@
-import asyncio
-import base64
-import json
 import os
-import sys
-import time
+import base64
 from io import BytesIO
-from random import randint
 from typing import Dict
-import requests
-
-from together_worker.fast_inference import FastInferenceInterface
-from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
-from together_web3.together import TogetherWeb3, TogetherClientOptions
-from diffusers import StableDiffusionPipeline
 import torch
 
+from diffusers import StableDiffusionPipeline
+from together_worker.fast_inference import FastInferenceInterface
+from together_web3.together import TogetherWeb3, TogetherClientOptions
+from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
 
 class FastStableDiffusion(FastInferenceInterface):
     def __init__(self, model_name: str, args=None) -> None:
