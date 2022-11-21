@@ -1,3 +1,4 @@
+FROM 598726163780.dkr.ecr.us-west-2.amazonaws.com/node:latest AS node
 # Forked from https://github.com/tridao/zoo/blob/0c43127363a6bcf54ff200f215654e24e344f9ae/Dockerfile
 FROM nvcr.io/nvidia/pytorch:22.09-py3 as base
 
@@ -35,7 +36,8 @@ WORKDIR /home/user
 ENV PIP_NO_CACHE_DIR=1
 
 # General packages that we don't care about the version
-RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker \
+RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 \
+    && pip install 'together_worker @ git+https://github.com/togethercomputer/together_worker@1859cf88a3a562406de2362c1e5468aaf1605370' \
     && python -m spacy download en_core_web_sm
 # Core packages
 RUN pip install transformers==4.22.2 datasets==2.5.1
@@ -49,4 +51,6 @@ RUN git clone https://github.com/HazyResearch/flash-attention \
 RUN git clone https://github.com/HazyResearch/diffusers \
     && cd diffusers && pip install -e .
 
+COPY --from=node /usr/local/bin/together /usr/local/bin/
 COPY app /app
+WORKDIR /app
