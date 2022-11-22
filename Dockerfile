@@ -53,3 +53,4 @@ RUN git clone https://github.com/HazyResearch/diffusers \
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/
 COPY app app
+COPY serve.sh serve.sh
