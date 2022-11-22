@@ -58,8 +58,8 @@ jobs:
           git config --global user.name 'Together Robot'
           git push --tags
           docker build -f "$DOCKERFILE" --build-arg TAG_NAME=${TAG_NAME} \
-            -t ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}:${TAG_NAME} .
-          docker tag ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}:latest
+            -t ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}:${TAG_NAME} \
+            -t ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}:latest .
           docker push -a ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}
           echo "::set-output name=tag::$TAG_NAME"
           echo "Finished push"
