@@ -14,7 +14,7 @@ class FastStableDiffusion(FastInferenceInterface):
         args = args if args is not None else {}
         super().__init__(model_name, args)
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            "CompVis/stable-diffusion-v1-5",
+            "runwayml/stable-diffusion-v1-5",
             torch_dtype=torch.float16,
             revision="fp16",
             use_auth_token=args.get("auth_token"),
@@ -50,9 +50,9 @@ if __name__ == "__main__":
         websocket_url=os.environ.get("COORD_WS_URL", f"ws://{coord_url}:8093/websocket"),
     )
     fip = FastStableDiffusion(model_name=os.environ.get("MODEL", "StableDiffusion"), args={
-        "auth_token": os.environ["AUTH_TOKEN"],
+        "auth_token": os.environ.get("AUTH_TOKEN"),
         "coordinator": coordinator,
-        "device": os.environ.get("DEVICE", "cuda")
+        "device": os.environ.get("DEVICE", "cuda"),
         "format": os.environ.get("FORMAT", "JPEG"),
         "gpu_num": 1 if torch.cuda.is_available() else 0,
         "gpu_type": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
