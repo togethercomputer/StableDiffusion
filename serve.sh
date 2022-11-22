@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 if [[ ! -z "$CONDA_ACTIVATE" ]]; then
   conda activate $CONDA_ACTIVATE

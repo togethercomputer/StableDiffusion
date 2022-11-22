@@ -1,5 +1,6 @@
 import os
 import base64
+import logging
 from io import BytesIO
 from typing import Dict
 import torch
@@ -19,28 +20,40 @@ class FastStableDiffusion(FastInferenceInterface):
             revision="fp16",
             use_auth_token=args.get("auth_token"),
         )
-        self.pipe = self.pipe.to(args.get("device", "cuda"))
         self.format = args.get("format", "JPEG")
+        self.device = args.get("device", "cuda")
+        self.pipe = self.pipe.to(self.device)
 
     def dispatch_request(self, args, env) -> Dict:
-        prompt = args[0]["prompt"] 
-        output = self.pipe(
-            prompt if isinstance(prompt, list) else [prompt],
-            height=args[0].get("height", 512),
-            width=args[0].get("width", 512),
-            num_images_per_prompt=args[0].get("n", 1),
-            num_inference_steps=args[0].get("steps", 50),
-        )
-        choices = []
-        for image in output.images:
-            buffered = BytesIO()
-            image.save(buffered, format=args[0].get("format", self.format))
-            img_str = base64.b64encode(buffered.getvalue()).decode('ascii')
-            choices.append(ImageModelInferenceChoice(img_str))
-        return {
-            "result_type": RequestTypeImageModelInference,
-            "choices": choices,
-        }
+        try:
+            prompt = args[0]["prompt"]
+            seed = args[0].get("seed")
+            generator = torch.Generator(self.device).manual_seed(seed) if seed else None
+            output = self.pipe(
+                prompt if isinstance(prompt, list) else [prompt],
+                generator=generator,
+                height=args[0].get("height", 512),
+                width=args[0].get("width", 512),
+                num_images_per_prompt=args[0].get("n", 1),
+                num_inference_steps=args[0].get("steps", 50),
+                guidance_scale=args[0].get("guidance_scale", 7.5),
+            )
+            choices = []
+            for image in output.images:
+                buffered = BytesIO()
+                image.save(buffered, format=args[0].get("format", self.format))
+                img_str = base64.b64encode(buffered.getvalue()).decode('ascii')
+                choices.append(ImageModelInferenceChoice(img_str))
+            return {
+                "result_type": RequestTypeImageModelInference,
+                "choices": choices,
+            }
+        except Exception as e:
+            logging.exception(e)
+            return {
+                "result_type": "error",
+                "value": str(e),
+            }
 
 if __name__ == "__main__":
     coord_url = os.environ.get("COORD_URL", "127.0.0.1")
