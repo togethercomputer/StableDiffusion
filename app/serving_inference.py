@@ -20,6 +20,7 @@ class FastStableDiffusion(FastInferenceInterface):
             use_auth_token=args.get("auth_token"),
         )
         self.pipe = self.pipe.to(args.get("device", "cuda"))
+        self.format = args.get("format", "JPEG")
 
     def dispatch_request(self, args, env) -> Dict:
         prompt = args[0]["prompt"] 
@@ -33,7 +34,7 @@ class FastStableDiffusion(FastInferenceInterface):
         choices = []
         for image in output.images:
             buffered = BytesIO()
-            image.save(buffered, format="PNG")
+            image.save(buffered, format=args[0].get("format", self.format))
             img_str = base64.b64encode(buffered.getvalue()).decode('ascii')
             choices.append(ImageModelInferenceChoice(img_str))
         return {
@@ -51,6 +52,7 @@ if __name__ == "__main__":
     fip = FastStableDiffusion(model_name=os.environ.get("MODEL", "StableDiffusion"), args={
         "auth_token": os.environ["AUTH_TOKEN"],
         "coordinator": coordinator,
+        "format": os.environ.get("FORMAT", "JPEG"),
         "gpu_num": 1 if torch.cuda.is_available() else 0,
         "gpu_type": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
         "gpu_memory": torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else None,
