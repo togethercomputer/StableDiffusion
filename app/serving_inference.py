@@ -24,11 +24,11 @@ class FastStableDiffusion(FastInferenceInterface):
     def dispatch_request(self, args, env) -> Dict:
         prompt = args[0]["prompt"] 
         output = self.pipe(
-            prompt, #prompt if isinstance(prompt, list) else [prompt],
-            #height=args[0].get("height", 512),
-            #width=args[0].get("width", 512),
-            #num_images_per_prompt=args[0].get("n", 1),
-            #num_inference_steps=args[0].get("steps", 50),
+            prompt if isinstance(prompt, list) else [prompt],
+            height=args[0].get("height", 512),
+            width=args[0].get("width", 512),
+            num_images_per_prompt=args[0].get("n", 1),
+            num_inference_steps=args[0].get("steps", 50),
         )
         choices = []
         for image in output.images:
