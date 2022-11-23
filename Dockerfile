@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # All users can use /home/user as their home directory
 ENV HOME=/home/user
-RUN mkdir -p /home/user && chmod 777 /home/user
+RUN mkdir -p /home/user/.together && chmod 777 /home/user
 WORKDIR /home/user
 
 # Disable pip cache: https://stackoverflow.com/questions/45594707/what-is-pips-no-cache-dir-good-for
@@ -39,6 +39,7 @@ ENV PIP_NO_CACHE_DIR=1
 RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 \
     && pip install 'together_worker @ git+https://github.com/togethercomputer/together_worker@e89cd2f1eedd64eb5e85e896f3b33f2563d946d4' \
     && python -m spacy download en_core_web_sm
+
 # Core packages
 RUN pip install transformers==4.22.2 datasets==2.5.1
 
@@ -54,5 +55,6 @@ RUN git clone https://github.com/HazyResearch/diffusers \
 COPY --from=node /usr/local/bin/together /usr/local/bin/
 COPY app app
 COPY serve.sh serve.sh
+COPY local-cfg.yaml .together/cfg.yaml
 
 CMD ./serve.sh
