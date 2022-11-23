@@ -1,0 +1,13 @@
+# Copy to ~/.together/cfg.yaml (on host), then run: together start
+worker:
+  mode: docker-service
+  image: togethercomputer/stablediffusion
+  group:
+    alloc: each
+  gpu:
+    type: cuda
+    alloc: all
+  network:
+    mode: host
+  command: ./serve.sh
+  env: AUTH_TOKEN=hf_XXX NUM_WORKERS=1 HF_HOME=/together/together_models
