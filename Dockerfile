@@ -44,12 +44,12 @@ RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spac
 RUN pip install transformers==4.22.2 datasets==2.5.1
 
 # # Install FlashAttention
-RUN git clone https://github.com/HazyResearch/flash-attention \
+RUN git clone https://github.com/togethercomputer/flash-attention \
     && cd flash-attention && pip install . \
     && cd .. && rm -rf flash-attention
 
 # Set up diffusers
-RUN git clone https://github.com/HazyResearch/diffusers \
+RUN git clone https://github.com/togethercomputer/diffusers \
     && cd diffusers && pip install -e .
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/

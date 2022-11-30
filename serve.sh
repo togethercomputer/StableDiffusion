@@ -10,7 +10,7 @@ fi
 NUM_WORKERS=${NUM_WORKERS-1}
 if [[ "$NUM_WORKERS" == "auto" ]]; then
   NUM_WORKERS=`nvidia-smi --query-gpu=name --format=csv,noheader | wc -l`
-  echo NUM_WORKERS=auto resolved to NUM_WORKERS+${NUM_WORKERS}
+  echo NUM_WORKERS=auto resolved to NUM_WORKERS=${NUM_WORKERS}
 fi
 
 for ((i = 0; i < $NUM_WORKERS; i++)); do
