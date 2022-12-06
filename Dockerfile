@@ -36,8 +36,7 @@ WORKDIR /home/user
 ENV PIP_NO_CACHE_DIR=1
 
 # General packages that we don't care about the version
-RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 \
-    && pip install 'together_worker @ git+https://github.com/togethercomputer/together_worker@e89cd2f1eedd64eb5e85e896f3b33f2563d946d4' \
+RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker \
     && python -m spacy download en_core_web_sm
 
 # Core packages
