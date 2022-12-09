@@ -48,7 +48,7 @@ RUN git clone https://github.com/togethercomputer/flash-attention \
     && cd .. && rm -rf flash-attention
 
 # Set up diffusers
-RUN git clone https://github.com/togethercomputer/diffusers \
+RUN git clone --branch sync/hf_diffusers/0.9 https://github.com/togethercomputer/diffusers.git \
     && cd diffusers && pip install -e .
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/
