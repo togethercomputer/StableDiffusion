@@ -69,7 +69,7 @@ if __name__ == "__main__":
         "format": os.environ.get("FORMAT", "JPEG"),
         "gpu_num": 1 if torch.cuda.is_available() else 0,
         "gpu_type": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-        "gpu_memory": torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else None,
+        "gpu_mem": torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else None,
         "group_name": os.environ.get("GROUP", "group1"),
         "worker_name": os.environ.get("WORKER", "worker1"),
     })
