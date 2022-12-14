@@ -50,6 +50,9 @@ RUN git clone https://github.com/togethercomputer/flash-attention \
 # Set up diffusers
 RUN git clone https://github.com/togethercomputer/diffusers \
     && cd diffusers && pip install -e .
+    
+# Install non-simd Pillow
+RUN pip install --upgrade Pillow
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/
 COPY app app
