@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/README.md'
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
