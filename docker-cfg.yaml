@@ -10,4 +10,4 @@ worker:
   network:
     mode: host
   command: ./serve.sh
-  env: AUTH_TOKEN=hf_XXX NUM_WORKERS=1 HF_HOME=/together/together_models
+  env: AUTH_TOKEN=hf_XXX NUM_WORKERS=1 HF_HOME=/home/user/.together/models

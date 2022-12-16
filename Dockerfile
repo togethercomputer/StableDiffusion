@@ -55,8 +55,8 @@ RUN git clone https://github.com/togethercomputer/diffusers \
 RUN pip install --upgrade Pillow
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/
+COPY local-cfg.yaml /home/user/cfg.yaml
 COPY app app
 COPY serve.sh serve.sh
-COPY local-cfg.yaml .together/cfg.yaml
 
 CMD ./serve.sh

@@ -15,7 +15,7 @@ class FastStableDiffusion(FastInferenceInterface):
         args = args if args is not None else {}
         super().__init__(model_name, args)
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            "runwayml/stable-diffusion-v1-5",
+            os.environ.get("HF_MODEL", "runwayml/stable-diffusion-v1-5"),
             torch_dtype=torch.float16,
             revision="fp16",
             use_auth_token=args.get("auth_token"),
