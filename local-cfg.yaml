@@ -1,7 +1,7 @@
-# Installed to ~/.together/cfg.yaml in container
+# Installed to /home/user/cfg.yaml in container
 worker:
   mode: local-service
   group:
     alloc: each
   command: /home/user/serve.sh
-  env: HF_HOME=/together/together_models
+  env: HF_HOME=/home/user/.together/models

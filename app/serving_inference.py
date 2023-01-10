@@ -19,7 +19,7 @@ class FastStableDiffusion(FastInferenceInterface):
         if self.pipeline_name == "stabilityai/stable-diffusion-2-1":
             self.default_size = 768
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            self.pipeline_name,
+            os.environ.get("HF_MODEL", "runwayml/stable-diffusion-v1-5"),
             torch_dtype=torch.float16,
             revision="fp16",
             use_auth_token=args.get("auth_token"),
@@ -63,7 +63,7 @@ class FastStableDiffusion(FastInferenceInterface):
 if __name__ == "__main__":
     pipeline_name = os.environ.get("PIPELINE", "runwayml/stable-diffusion-v1-5")
     url_friendly_name = pipeline_name.replace("/", "-")
-    coord_url = os.environ.get("COORD_URL", "127.0.0.1")
+    coord_url = os.environ.get("COORD_URL", "localhost")
     coordinator = TogetherWeb3(
         TogetherClientOptions(reconnect=True),
         http_url=os.environ.get("COORD_HTTP_URL", f"http://{coord_url}:8092"),
@@ -76,7 +76,7 @@ if __name__ == "__main__":
         "format": os.environ.get("FORMAT", "JPEG"),
         "gpu_num": 1 if torch.cuda.is_available() else 0,
         "gpu_type": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-        "gpu_memory": torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else None,
+        "gpu_mem": torch.cuda.get_device_properties(0).total_memory if torch.cuda.is_available() else None,
         "group_name": os.environ.get("GROUP", "group1"),
         "worker_name": os.environ.get("WORKER", "worker1"),
         "pipeline": os.environ.get("PIPELINE", "runwayml/stable-diffusion-v1-5"),

@@ -50,10 +50,13 @@ RUN git clone https://github.com/togethercomputer/flash-attention \
 # Set up diffusers
 RUN git clone --branch sync/hf_diffusers/0.9 https://github.com/togethercomputer/diffusers.git \
     && cd diffusers && pip install -e .
+    
+# Install non-simd Pillow
+RUN pip install --upgrade Pillow
 
 COPY --from=node /usr/local/bin/together /usr/local/bin/
+COPY local-cfg.yaml /home/user/cfg.yaml
 COPY app app
 COPY serve.sh serve.sh
-COPY local-cfg.yaml .together/cfg.yaml
 
 CMD ./serve.sh
