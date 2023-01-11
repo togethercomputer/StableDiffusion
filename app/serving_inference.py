@@ -15,7 +15,7 @@ class FastStableDiffusion(FastInferenceInterface):
         args = args if args is not None else {}
         super().__init__(model_name, args)
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            os.environ.get("HF_MODEL", "runwayml/stable-diffusion-v1-5"),
+            os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5"),
             torch_dtype=torch.float16,
             revision="fp16",
             use_auth_token=args.get("auth_token"),
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         http_url=os.environ.get("COORD_HTTP_URL", f"http://{coord_url}:8092"),
         websocket_url=os.environ.get("COORD_WS_URL", f"ws://{coord_url}:8093/websocket"),
     )
-    fip = FastStableDiffusion(model_name=os.environ.get("MODEL", "StableDiffusion"), args={
+    fip = FastStableDiffusion(model_name=os.environ.get("SERVICE", "StableDiffusion"), args={
         "auth_token": os.environ.get("AUTH_TOKEN"),
         "coordinator": coordinator,
         "device": os.environ.get("DEVICE", "cuda"),

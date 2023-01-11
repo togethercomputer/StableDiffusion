@@ -17,5 +17,6 @@ docker run --rm --gpus all \
   -e CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES \
   -v $PWD/.together:/home/user/.together \
   -it togethercomputer/stablediffusion /usr/local/bin/together start \
-    --config /home/user/cfg.yaml --color --worker.model StableDiffusion
+    --config /home/user/cfg.yaml --color --worker.model runwayml/stable-diffusion-v1-5 \
+    --worker.service StableDiffusion
 ```

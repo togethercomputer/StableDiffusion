@@ -1,7 +1,6 @@
 # Copy to ~/.together/cfg.yaml (on host), then run: together start
 worker:
   mode: docker-service
-  model: StableDiffusion
   image: togethercomputer/stablediffusion
   group:
     alloc: each
