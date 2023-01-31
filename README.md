@@ -20,3 +20,8 @@ docker run --rm --gpus all \
     --config /home/user/cfg.yaml --color --worker.model runwayml/stable-diffusion-v1-5 \
     --worker.service StableDiffusion
 ```
+
+To support image inputs add:
+```
+  --worker.options="input=text,image"
+```

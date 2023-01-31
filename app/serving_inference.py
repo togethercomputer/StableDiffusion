@@ -2,6 +2,7 @@ import os
 import base64
 import logging
 from io import BytesIO
+from PIL import Image
 from typing import Dict
 import torch
 
@@ -9,6 +10,19 @@ from diffusers import StableDiffusionPipeline
 from together_worker.fast_inference import FastInferenceInterface
 from together_web3.together import TogetherWeb3, TogetherClientOptions
 from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
+
+
+def parse_tags(input: str) -> Dict[str, str]:
+    tags: Dict[str, str] = {}
+    if not input:
+        return tags
+    for word in input.split():
+        if not word:
+            continue
+        kv = word.split("=")
+        tags[kv[0]] = "=".join(kv[1:])
+    return tags
+
 
 class FastStableDiffusion(FastInferenceInterface):
     def __init__(self, model_name: str, args=None) -> None:
@@ -23,21 +37,48 @@ class FastStableDiffusion(FastInferenceInterface):
         self.format = args.get("format", "JPEG")
         self.device = args.get("device", "cuda")
         self.pipe = self.pipe.to(self.device)
+        self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
+        self.inputs = self.options.get("input", "").split(",")
+        if "image" in self.inputs:
+            self.image_pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+                os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5"),
+                torch_dtype=torch.float16,
+                revision="fp16",
+                use_auth_token=args.get("auth_token"),
+            ).to(self.device)
+
 
     def dispatch_request(self, args, env) -> Dict:
         try:
             prompt = args[0]["prompt"]
             seed = args[0].get("seed")
             generator = torch.Generator(self.device).manual_seed(seed) if seed else None
-            output = self.pipe(
-                prompt if isinstance(prompt, list) else [prompt],
-                generator=generator,
-                height=args[0].get("height", 512),
-                width=args[0].get("width", 512),
-                num_images_per_prompt=args[0].get("n", 1),
-                num_inference_steps=args[0].get("steps", 50),
-                guidance_scale=args[0].get("guidance_scale", 7.5),
-            )
+            image_input = args[0].get("image_base64")
+            if image_input:
+                if not self.image_pipe:
+                    raise Exception("Image prompts not supported")
+                init_image = Image.open(BytesIO(base64.b64decode(image_input))).convert("RGB")
+                init_image.thumbnail((768, 768))
+                output = self.image_pipe(
+                    prompt if isinstance(prompt, list) else [prompt],
+                    image=init_image,
+                    generator=generator,
+                    height=args[0].get("height", 512),
+                    width=args[0].get("width", 512),
+                    num_images_per_prompt=args[0].get("n", 1),
+                    num_inference_steps=args[0].get("steps", 50),
+                    guidance_scale=args[0].get("guidance_scale", 7.5),
+                )
+            else:
+                output = self.pipe(
+                    prompt if isinstance(prompt, list) else [prompt],
+                    generator=generator,
+                    height=args[0].get("height", 512),
+                    width=args[0].get("width", 512),
+                    num_images_per_prompt=args[0].get("n", 1),
+                    num_inference_steps=args[0].get("steps", 50),
+                    guidance_scale=args[0].get("guidance_scale", 7.5),
+                )
             choices = []
             for image in output.images:
                 buffered = BytesIO()

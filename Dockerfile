@@ -1,4 +1,4 @@
-FROM 598726163780.dkr.ecr.us-west-2.amazonaws.com/node:latest AS node
+FROM 598726163780.dkr.ecr.us-west-2.amazonaws.com/together-node:latest AS together-node
 # Forked from https://github.com/tridao/zoo/blob/0c43127363a6bcf54ff200f215654e24e344f9ae/Dockerfile
 FROM nvcr.io/nvidia/pytorch:22.09-py3 as base
 
@@ -54,7 +54,8 @@ RUN git clone https://github.com/togethercomputer/diffusers \
 # Install non-simd Pillow
 RUN pip install --upgrade Pillow
 
-COPY --from=node /usr/local/bin/together /usr/local/bin/
+COPY --from=together-node /usr/local/bin/together-node /usr/local/bin/
+COPY --from=together-node /usr/local/bin/together-node-update.sh /usr/local/bin/
 COPY local-cfg.yaml /home/user/cfg.yaml
 COPY app app
 COPY serve.sh serve.sh
