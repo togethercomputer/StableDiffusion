@@ -6,7 +6,7 @@ from PIL import Image
 from typing import Dict
 import torch
 
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
 from together_worker.fast_inference import FastInferenceInterface
 from together_web3.together import TogetherWeb3, TogetherClientOptions
 from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
@@ -61,7 +61,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 init_image.thumbnail((768, 768))
                 output = self.image_pipe(
                     prompt if isinstance(prompt, list) else [prompt],
-                    image=init_image,
+                    init_image=init_image,
                     generator=generator,
                     height=args[0].get("height", 512),
                     width=args[0].get("width", 512),
