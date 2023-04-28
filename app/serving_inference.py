@@ -9,19 +9,7 @@ import torch
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
 from together_worker.fast_inference import FastInferenceInterface
 from together_web3.together import TogetherWeb3, TogetherClientOptions
-from together_web3.computer import ImageModelInferenceChoice, RequestTypeImageModelInference
-
-
-def parse_tags(input: str) -> Dict[str, str]:
-    tags: Dict[str, str] = {}
-    if not input:
-        return tags
-    for word in input.split():
-        if not word:
-            continue
-        kv = word.split("=")
-        tags[kv[0]] = "=".join(kv[1:])
-    return tags
+from together_web3.computer import ImageModelInferenceChoice, parse_tags, RequestTypeImageModelInference
 
 
 class FastStableDiffusion(FastInferenceInterface):
@@ -95,6 +83,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 "result_type": "error",
                 "value": str(e),
             }
+
 
 if __name__ == "__main__":
     coord_url = os.environ.get("COORD_URL", "localhost")
