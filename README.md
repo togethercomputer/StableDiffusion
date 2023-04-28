@@ -8,6 +8,22 @@ python test/test.py
 Expected performance on A100: 1.5-1.6s.
 
 
+To bring up a local REST server:
+
+```
+docker run --rm --gpus device=0 \
+  -p 5001:5001 \
+  -e AUTH_TOKEN=hf_XXX \
+  -e SERVICE_DOMAIN=http \
+  -e MODEL=runwayml/stable-diffusion-v1-5 \
+  -v $PWD/.together:/home/user/.together \
+  -it togethercomputer/stablediffusion app/serving_inference.py
+
+curl -X POST -H 'Content-Type: application/json' http://localhost:5001/ \
+  -d '{"model": "StableDiffusion", "prompt": "Space robots", "n": 1, "steps": 20 }'
+```
+
+
 To bring up a standalone node:
 
 ```
