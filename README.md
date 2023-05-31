@@ -7,7 +7,6 @@ python test/test.py
 
 Expected performance on A100: 1.5-1.6s.
 
-
 To bring up a local REST server:
 
 ```
