@@ -16,10 +16,13 @@ class FastStableDiffusion(FastInferenceInterface):
     def __init__(self, model_name: str, args=None) -> None:
         args = args if args is not None else {}
         super().__init__(model_name, args)
+        model_revision = os.environ.get("MODEL_REVISION", "fp16")
+        if not model_revision or model_revision == "none":
+            model_revision = None
         self.pipe = StableDiffusionPipeline.from_pretrained(
             os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5"),
             torch_dtype=torch.float16,
-            revision="fp16",
+            revision=model_revision,
             use_auth_token=args.get("auth_token"),
         )
         self.format = args.get("format", "JPEG")
@@ -31,7 +34,7 @@ class FastStableDiffusion(FastInferenceInterface):
             self.image_pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
                 os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5"),
                 torch_dtype=torch.float16,
-                revision="fp16",
+                revision=model_revision,
                 use_auth_token=args.get("auth_token"),
             ).to(self.device)
 
