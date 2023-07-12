@@ -36,7 +36,7 @@ WORKDIR /home/user
 ENV PIP_NO_CACHE_DIR=1
 
 # General packages that we don't care about the version
-RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker \
+RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker diffusers[torch] \
     && python -m spacy download en_core_web_sm
 
 # Core packages
@@ -47,10 +47,6 @@ RUN git clone https://github.com/togethercomputer/flash-attention \
     && cd flash-attention && pip install . \
     && cd .. && rm -rf flash-attention
 
-# Set up diffusers
-RUN git clone https://github.com/togethercomputer/diffusers \
-    && cd diffusers && pip install -e .
-    
 # Install non-simd Pillow
 RUN pip install --upgrade Pillow
 
