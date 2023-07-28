@@ -6,7 +6,7 @@ from PIL import Image
 from typing import Dict
 import torch
 
-from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, DiffusionPipeline
 from together_worker.fast_inference import FastInferenceInterface
 from together_web3.together import TogetherWeb3, TogetherClientOptions
 from together_web3.computer import ImageModelInferenceChoice, parse_tags, RequestTypeImageModelInference
