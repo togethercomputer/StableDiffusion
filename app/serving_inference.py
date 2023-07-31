@@ -6,7 +6,7 @@ from PIL import Image
 from typing import Dict
 import torch
 
-from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionXLPipeline
 from together_worker.fast_inference import FastInferenceInterface
 from together_web3.together import TogetherWeb3, TogetherClientOptions
 from together_web3.computer import ImageModelInferenceChoice, parse_tags, RequestTypeImageModelInference
@@ -17,11 +17,11 @@ class FastStableDiffusion(FastInferenceInterface):
         args = args if args is not None else {}
         super().__init__(model_name, args)
         model_revision = os.environ.get("MODEL_REVISION", "fp16")
-        model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
         if not model_revision or model_revision == "none":
             model_revision = None
+        model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
         if(model == "stabilityai/stable-diffusion-xl-base-1.0"):
-            self.pipe = DiffusionPipeline.from_pretrained(
+            self.pipe = StableDiffusionXLPipeline.from_pretrained(
                 model,
                 torch_dtype=torch.float16,
                 revision=model_revision,
@@ -29,7 +29,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 use_safetensors=True,
                 variant="fp16"
             )
-        else 
+        else:
             self.pipe = StableDiffusionPipeline.from_pretrained(
                 model,
                 torch_dtype=torch.float16,
