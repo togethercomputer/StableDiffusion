@@ -23,7 +23,7 @@ class FastStableDiffusion(FastInferenceInterface):
         if(model == "stabilityai/stable-diffusion-xl-base-1.0"):
             self.pipe = StableDiffusionXLPipeline.from_pretrained(
                 model,
-                torch_dtype=torch.float16,
+                torch_dtype=torch.float32,
                 revision=model_revision,
                 use_auth_token=args.get("auth_token"),
                 use_safetensors=True,
