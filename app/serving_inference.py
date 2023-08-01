@@ -6,7 +6,7 @@ from PIL import Image
 from typing import Dict
 import torch
 
-from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, DiffusionPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionXLPipeline
 from together_worker.fast_inference import FastInferenceInterface
 from together_web3.together import TogetherWeb3, TogetherClientOptions
 from together_web3.computer import ImageModelInferenceChoice, parse_tags, RequestTypeImageModelInference
@@ -19,12 +19,23 @@ class FastStableDiffusion(FastInferenceInterface):
         model_revision = os.environ.get("MODEL_REVISION", "fp16")
         if not model_revision or model_revision == "none":
             model_revision = None
-        self.pipe = StableDiffusionPipeline.from_pretrained(
-            os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5"),
-            torch_dtype=torch.float16,
-            revision=model_revision,
-            use_auth_token=args.get("auth_token"),
-        )
+        model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
+        if(model == "stabilityai/stable-diffusion-xl-base-1.0"):
+            self.pipe = StableDiffusionXLPipeline.from_pretrained(
+                model,
+                torch_dtype=torch.float16,
+                revision=model_revision,
+                use_auth_token=args.get("auth_token"),
+                use_safetensors=True,
+                variant="fp16"
+            )
+        else:
+            self.pipe = StableDiffusionPipeline.from_pretrained(
+                model,
+                torch_dtype=torch.float16,
+                revision=model_revision,
+                use_auth_token=args.get("auth_token"),
+            )
         self.format = args.get("format", "JPEG")
         self.device = args.get("device", "cuda")
         self.pipe = self.pipe.to(self.device)
