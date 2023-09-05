@@ -19,10 +19,11 @@ class FastStableDiffusion(FastInferenceInterface):
         model_revision = os.environ.get("MODEL_REVISION", "fp16")
         if not model_revision or model_revision == "none":
             model_revision = None
-        model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
-        if(model == "stabilityai/stable-diffusion-xl-base-1.0"):
+        self.model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
+        print("init MODEL", self.model)
+        if(self.model == "stabilityai/stable-diffusion-xl-base-1.0"):
             self.pipe = StableDiffusionXLPipeline.from_pretrained(
-                model,
+                self.model,
                 torch_dtype=torch.float32,
                 revision=model_revision,
                 use_auth_token=args.get("auth_token"),
@@ -31,7 +32,7 @@ class FastStableDiffusion(FastInferenceInterface):
             )
         else:
             self.pipe = StableDiffusionPipeline.from_pretrained(
-                model,
+                self.model,
                 torch_dtype=torch.float16,
                 revision=model_revision,
                 use_auth_token=args.get("auth_token"),
@@ -52,7 +53,12 @@ class FastStableDiffusion(FastInferenceInterface):
 
     def dispatch_request(self, args, env) -> Dict:
         try:
+            print('INVOKING:', self.model)
+            print("ARGS:", args[0])
             prompt = args[0]["prompt"]
+            negative_prompt = args[0].get("negative_prompt", None)
+            if negative_prompt is not None:
+                negative_prompt = negative_prompt if isinstance(negative_prompt, list) else [negative_prompt]
             seed = args[0].get("seed")
             generator = torch.Generator(self.device).manual_seed(seed) if seed else None
             image_input = args[0].get("image_base64")
@@ -63,6 +69,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 init_image.thumbnail((768, 768))
                 output = self.image_pipe(
                     prompt if isinstance(prompt, list) else [prompt],
+                    negative_prompt=negative_prompt,
                     init_image=init_image,
                     generator=generator,
                     height=args[0].get("height", 512),
@@ -74,6 +81,7 @@ class FastStableDiffusion(FastInferenceInterface):
             else:
                 output = self.pipe(
                     prompt if isinstance(prompt, list) else [prompt],
+                    negative_prompt=negative_prompt,
                     generator=generator,
                     height=args[0].get("height", 512),
                     width=args[0].get("width", 512),
