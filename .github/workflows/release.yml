@@ -20,7 +20,7 @@ defaults:
 jobs:
   build:
     name: Build and push intermediate image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-4core
     outputs:
       tag: ${{ steps.build-image.outputs.tag }}
     steps:
