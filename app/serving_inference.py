@@ -72,8 +72,6 @@ class FastStableDiffusion(FastInferenceInterface):
                     negative_prompt=negative_prompt,
                     image=init_image,
                     generator=generator,
-                    height=args[0].get("height", 512),
-                    width=args[0].get("width", 512),
                     num_images_per_prompt=args[0].get("n", 1),
                     num_inference_steps=args[0].get("steps", 50),
                     guidance_scale=args[0].get("guidance_scale", 7.5),
