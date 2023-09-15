@@ -70,7 +70,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 output = self.image_pipe(
                     prompt if isinstance(prompt, list) else [prompt],
                     negative_prompt=negative_prompt,
-                    init_image=init_image,
+                    image=init_image,
                     generator=generator,
                     height=args[0].get("height", 512),
                     width=args[0].get("width", 512),
