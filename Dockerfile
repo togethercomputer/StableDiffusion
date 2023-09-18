@@ -40,7 +40,7 @@ RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spac
     && python -m spacy download en_core_web_sm
 
 # Core packages
-RUN pip install transformers==4.30.2 datasets==2.5.1
+RUN pip install transformers==4.30.2 datasets==2.5.1 accelerate
 
 # # Install FlashAttention
 RUN git clone https://github.com/togethercomputer/flash-attention \
