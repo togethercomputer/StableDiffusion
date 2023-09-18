@@ -43,9 +43,9 @@ RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spac
 RUN pip install transformers==4.30.2 datasets==2.5.1 accelerate
 
 # # Install FlashAttention
-RUN git clone https://github.com/togethercomputer/flash-attention \
-    && cd flash-attention && pip install . \
-    && cd .. && rm -rf flash-attention
+RUN pip3 install --no-cache-dir \
+    'flash_attn @ git+https://github.com/Dao-AILab/flash-attention.git@v2.2.3' \
+    xformers
 
 # Install non-simd Pillow
 RUN pip install --upgrade Pillow

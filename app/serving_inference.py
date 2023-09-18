@@ -48,6 +48,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 variant="fp16",
                 device_map="auto" if self.device == "cuda" else self.device,
             )
+            self.pipe_text2image.enable_xformers_memory_efficient_attention()
         else:
             self.pipe_text2image = StableDiffusionPipeline.from_pretrained(
                 self.model,
@@ -56,6 +57,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 use_auth_token=args.get("auth_token"),
                 device_map="auto" if self.device == "cuda" else self.device,
             )
+            self.pipe_text2image.enable_xformers_memory_efficient_attention()
 
         self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
         self.inputs = self.options.get("input", "").split(",")
@@ -65,6 +67,7 @@ class FastStableDiffusion(FastInferenceInterface):
             self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
                 self.pipe_text2image
             ).to(self.device)
+            self.pipe_image2image.enable_xformers_memory_efficient_attention()
 
         # Commenting out for now
         # TODO: add support for inpainting
