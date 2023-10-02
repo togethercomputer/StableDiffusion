@@ -1,0 +1,165 @@
+OSS Package, Version, License, Link, Designation, Modified
+aiohttp, 3.8.3, Apache 2, https://github.com/aio-libs/aiohttp, Server, No
+aiohttp-sse-client2, 0.3.0, Apache License 2.0, https://github.com/JelleZijlstra/aiohttp-sse-client2, Server, No
+aiosignal, 1.3.1, Apache 2.0, https://github.com/aio-libs/aiosignal, Server, No
+alabaster, 0.7.12, UNKNOWN, https://alabaster.readthedocs.io, Server, No
+ansible, 8.0.0, GPLv3+, https://ansible.com/, Server, No
+ansible-core, 2.15.0, GPLv3+, https://ansible.com/, Server, No
+anyio, 3.7.1, MIT, (Home-page not found), Server, No
+astroid, 2.12.13, LGPL-2.1-or-later, (Home-page not found), Server, No
+async-timeout, 4.0.2, Apache 2, https://github.com/aio-libs/async-timeout, Server, No
+attrs, 22.2.0, MIT, https://www.attrs.org/, Server, No
+autopep8, 1.7.0, Expat License, https://github.com/hhatto/autopep8, Server, No
+Babel, 2.11.0, BSD, https://babel.pocoo.org/, Server, No
+bandit, 1.7.4, Apache-2.0 license, https://bandit.readthedocs.io/, Server, No
+base58, 2.1.1, MIT, https://github.com/keis/base58, Server, No
+bitarray, 2.6.1, PSF, https://github.com/ilanschnell/bitarray, Server, No
+boto3, 1.26.144, Apache License 2.0, https://github.com/boto/boto3, Server, No
+botocore, 1.29.144, Apache License 2.0, https://github.com/boto/botocore, Server, No
+certifi, 2022.12.7, MPL-2.0, https://github.com/certifi/python-certifi, Server, No
+cffi, 1.15.1, MIT, http://cffi.readthedocs.org, Server, No
+cfgv, 3.3.1, MIT, https://github.com/asottile/cfgv, Server, No
+charset-normalizer, 2.1.1, MIT, https://github.com/ousret/charset_normalizer, Server, No
+click, 8.1.3, BSD-3-Clause, https://palletsprojects.com/p/click/, Server, No
+colorama, 0.4.6, (Licence not found), (Home-page not found), Server, No
+coverage, 6.5.0, Apache 2.0, https://github.com/nedbat/coveragepy, Server, No
+coverage-badge, 1.1.0, MIT, https://github.com/dbrgn/coverage-badge, Server, No
+cryptography, 41.0.0, Apache-2.0 OR BSD-3-Clause, (Home-page not found), Server, No
+cytoolz, 0.12.1, BSD, https://github.com/pytoolz/cytoolz, Server, No
+dacite, 1.7.0, MIT, https://github.com/konradhalas/dacite, Server, No
+darglint, 1.8.1, MIT, (Home-page not found), Server, No
+diffusers, 0.3.0, Apache, https://github.com/huggingface/diffusers, Server, No
+dill, 0.3.6, BSD-3-Clause, https://github.com/uqfoundation/dill, Server, No
+distlib, 0.3.6, Python license, https://github.com/pypa/distlib, Server, No
+docstring-parser, 0.15, MIT, https://github.com/rr-/docstring_parser, Server, No
+docutils, 0.19, public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt), https://docutils.sourceforge.io/, Server, No
+dparse, 0.6.2, MIT license, https://github.com/pyupio/dparse, Server, No
+eth-abi, 2.2.0, MIT, https://github.com/ethereum/eth-abi, Server, No
+eth-account, 0.5.9, MIT, https://github.com/ethereum/eth-account, Server, No
+eth-hash, 0.3.3, MIT, https://github.com/ethereum/eth-hash, Server, No
+eth-keyfile, 0.5.1, MIT, https://github.com/ethereum/eth-keyfile, Server, No
+eth-keys, 0.3.4, MIT, https://github.com/ethereum/eth-keys, Server, No
+eth-rlp, 0.2.1, MIT, https://github.com/ethereum/eth-rlp, Server, No
+eth-typing, 2.3.0, MIT, https://github.com/ethereum/eth-typing, Server, No
+eth-utils, 1.10.0, MIT, https://github.com/ethereum/eth-utils, Server, No
+exceptiongroup, 1.1.0, (Licence not found), (Home-page not found), Server, No
+filelock, 3.9.0, (Licence not found), (Home-page not found), Server, No
+frozenlist, 1.3.3, Apache 2, https://github.com/aio-libs/frozenlist, Server, No
+gitdb, 4.0.10, BSD License, https://github.com/gitpython-developers/gitdb, Server, No
+GitPython, 3.1.30, BSD, https://github.com/gitpython-developers/GitPython, Server, No
+h11, 0.14.0, MIT, https://github.com/python-hyper/h11, Server, No
+hexbytes, 0.3.0, MIT, https://github.com/ethereum/hexbytes, Server, No
+httpcore, 0.17.3, BSD, https://github.com/encode/httpcore, Server, No
+httpx, 0.24.1, (Licence not found), (Home-page not found), Server, No
+httpx-sse, 0.3.1, MIT, (Home-page not found), Server, No
+huggingface-hub, 0.11.1, Apache, https://github.com/huggingface/huggingface_hub, Server, No
+icetk, 0.0.4, MIT license, https://github.com/THUDM/icetk, Server, No
+identify, 2.5.11, MIT, https://github.com/pre-commit/identify, Server, No
+idna, 3.4, (Licence not found), (Home-page not found), Server, No
+imagesize, 1.4.1, MIT, https://github.com/shibukawa/imagesize_py, Server, No
+importlib-metadata, 5.2.0, (Licence not found), https://github.com/python/importlib_metadata, Server, No
+importlib-resources, 5.0.7, Apache2, https://github.com/python/importlib_resources, Server, No
+influxdb-client, 1.35.0, (Licence not found), https://github.com/influxdata/influxdb-client-python, Server, No
+iniconfig, 1.1.1, MIT License, http://github.com/RonnyPfannschmidt/iniconfig, Server, No
+ipfshttpclient, 0.8.0a2, MIT License, https://ipfs.io/ipns/12D3KooWEqnTdgqHnkkwarSrJjeMP2ZJiADWLYADaNvUb6SQNyPF/, Server, No
+isort, 5.11.4, MIT, https://pycqa.github.io/isort/, Server, No
+Jinja2, 3.1.2, BSD-3-Clause, https://palletsprojects.com/p/jinja/, Server, No
+jmespath, 1.0.1, MIT, https://github.com/jmespath/jmespath.py, Server, No
+jsonschema, 4.17.3, MIT, (Home-page not found), Server, No
+lazy-object-proxy, 1.8.0, BSD-2-Clause, https://github.com/ionelmc/python-lazy-object-proxy, Server, No
+lru-dict, 1.1.8, MIT, https://github.com/amitdev/lru-dict, Server, No
+MarkupSafe, 2.1.1, BSD-3-Clause, https://palletsprojects.com/p/markupsafe/, Server, No
+mccabe, 0.7.0, Expat license, https://github.com/pycqa/mccabe, Server, No
+multiaddr, 0.0.9, MIT License, https://github.com/multiformats/py-multiaddr, Server, No
+multidict, 6.0.4, Apache 2, https://github.com/aio-libs/multidict, Server, No
+mypy, 0.971, MIT License, http://www.mypy-lang.org/, Server, No
+mypy-extensions, 0.4.3, MIT License, https://github.com/python/mypy_extensions, Server, No
+netaddr, 0.8.0, BSD License, https://github.com/drkjam/netaddr/, Server, No
+netifaces, 0.11.0, MIT License, https://github.com/al45tair/netifaces, Server, No
+nodeenv, 1.7.0, BSD, https://github.com/ekalinin/nodeenv, Server, No
+numpy, 1.21.6, BSD, https://www.numpy.org, Server, No
+packaging, 22.0, (Licence not found), (Home-page not found), Server, No
+parsimonious, 0.8.1, MIT, https://github.com/erikrose/parsimonious, Server, No
+pbr, 5.11.0, UNKNOWN, https://docs.openstack.org/pbr/latest/, Server, No
+Pillow, 9.3.0, HPND, https://python-pillow.org, Server, No
+pip, 22.3.1, MIT, https://pip.pypa.io/, Server, No
+platformdirs, 2.6.2, (Licence not found), (Home-page not found), Server, No
+pluggy, 1.0.0, MIT, https://github.com/pytest-dev/pluggy, Server, No
+pre-commit, 2.21.0, MIT, https://github.com/pre-commit/pre-commit, Server, No
+protobuf, 3.19.5, 3-Clause BSD License, https://developers.google.com/protocol-buffers/, Server, No
+py, 1.11.0, MIT license, https://py.readthedocs.io/, Server, No
+pycodestyle, 2.10.0, Expat license, https://pycodestyle.pycqa.org/, Server, No
+pycparser, 2.21, BSD, https://github.com/eliben/pycparser, Server, No
+pycryptodome, 3.16.0, BSD, Public Domain, https://www.pycryptodome.org, Server, No
+pydocstyle, 6.1.1, MIT, https://github.com/PyCQA/pydocstyle/, Server, No
+Pygments, 2.13.0, BSD License, https://pygments.org/, Server, No
+pylint, 2.15.9, GPL-2.0-or-later, (Home-page not found), Server, No
+pynvml, 11.4.1, BSD, http://www.nvidia.com/, Server, No
+pyrsistent, 0.19.3, MIT, https://github.com/tobgu/pyrsistent/, Server, No
+pytest, 7.2.0, MIT, https://docs.pytest.org/en/latest/, Server, No
+pytest-asyncio, 0.19.0, Apache 2.0, https://github.com/pytest-dev/pytest-asyncio, Server, No
+pytest-cov, 3.0.0, MIT, https://github.com/pytest-dev/pytest-cov, Server, No
+pytest-html, 3.2.0, Mozilla Public License 2.0 (MPL 2.0), https://github.com/pytest-dev/pytest-html, Server, No
+pytest-metadata, 2.0.4, MPL-2.0, https://github.com/pytest-dev/pytest-metadata, Server, No
+pytest-timeout, 2.1.0, MIT, https://github.com/pytest-dev/pytest-timeout, Server, No
+python-dateutil, 2.8.2, Dual License, https://github.com/dateutil/dateutil, Server, No
+pytz, 2022.7, MIT, http://pythonhosted.org/pytz, Server, No
+pyupgrade, 2.38.4, MIT, https://github.com/asottile/pyupgrade, Server, No
+PyYAML, 6.0, MIT, https://pyyaml.org/, Server, No
+reactivex, 4.0.4, MIT, http://reactivex.io, Server, No
+regex, 2022.10.31, Apache Software License, https://github.com/mrabarnett/mrab-regex, Server, No
+requests, 2.28.1, Apache 2.0, https://requests.readthedocs.io, Server, No
+resolvelib, 1.0.1, ISC License, https://github.com/sarugaku/resolvelib, Server, No
+rlp, 2.0.1, MIT, https://github.com/ethereum/pyrlp, Server, No
+ruamel.yaml, 0.17.21, MIT license, https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree, Server, No
+ruamel.yaml.clib, 0.2.7, MIT, https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree, Server, No
+s3transfer, 0.6.1, Apache License 2.0, https://github.com/boto/s3transfer, Server, No
+safety, 2.3.4, MIT license, https://github.com/pyupio/safety, Server, No
+scipy, 1.7.3, BSD, https://www.scipy.org, Server, No
+sentencepiece, 0.1.97, Apache, https://github.com/google/sentencepiece, Server, No
+setuptools, 65.6.3, (Licence not found), https://github.com/pypa/setuptools, Server, No
+simple-parsing, 0.0.21.post1, (Licence not found), https://github.com/lebrice/SimpleParsing, Server, No
+six, 1.16.0, MIT, https://github.com/benjaminp/six, Server, No
+smmap, 5.0.0, BSD, https://github.com/gitpython-developers/smmap, Server, No
+sniffio, 1.3.0, MIT OR Apache-2.0, https://github.com/python-trio/sniffio, Server, No
+snowballstemmer, 2.2.0, BSD-3-Clause, https://github.com/snowballstem/snowball, Server, No
+sphinx, 5.3.0, (Licence not found), (Home-page not found), Server, No
+sphinxcontrib-applehelp, 1.0.2, BSD, http://sphinx-doc.org/, Server, No
+sphinxcontrib-devhelp, 1.0.2, BSD, http://sphinx-doc.org/, Server, No
+sphinxcontrib-htmlhelp, 2.0.0, BSD, http://sphinx-doc.org/, Server, No
+sphinxcontrib-jsmath, 1.0.1, BSD, http://sphinx-doc.org/, Server, No
+sphinxcontrib-qthelp, 1.0.3, BSD, http://sphinx-doc.org/, Server, No
+sphinxcontrib-serializinghtml, 1.1.5, BSD, http://sphinx-doc.org/, Server, No
+sseclient-py, 1.7.2, Apache Software License v2, https://github.com/mpetazzoni/sseclient, Server, No
+stevedore, 3.5.2, UNKNOWN, https://docs.openstack.org/stevedore/latest/, Server, No
+together, 0.1.2,                                  Apache License, (Home-page not found), Server, No
+together-web3, 0.1.5, MIT, https://github.com/togethercomputer/web3.py, Server, No
+together-worker, 0.1.0, MIT, https://github.com/together-computer/together_worker, Server, No
+tokenize-rt, 4.2.1, MIT, https://github.com/asottile/tokenize-rt, Server, No
+tokenizers, 0.13.2, Apache License 2.0, https://github.com/huggingface/tokenizers, Server, No
+toml, 0.10.2, MIT, https://github.com/uiri/toml, Server, No
+tomli, 2.0.1, (Licence not found), (Home-page not found), Server, No
+tomlkit, 0.11.6, MIT, https://github.com/sdispater/tomlkit, Server, No
+toolz, 0.12.0, BSD, https://github.com/pytoolz/toolz/, Server, No
+torch, 1.12.1, BSD-3, https://pytorch.org/, Server, No
+torchvision, 0.13.1, BSD, https://github.com/pytorch/vision, Server, No
+tqdm, 4.64.1, MPLv2.0, MIT Licences, https://tqdm.github.io, Server, No
+transformers, 4.25.1, Apache, https://github.com/huggingface/transformers, Server, No
+typed-argument-parser, 1.7.2, MIT, https://github.com/swansonk14/typed-argument-parser, Server, No
+typer, 0.9.0, (Licence not found), https://github.com/tiangolo/typer, Server, No
+types-PyYAML, 6.0.12.2, Apache-2.0 license, https://github.com/python/typeshed, Server, No
+types-requests, 2.28.11.7, Apache-2.0 license, https://github.com/python/typeshed, Server, No
+types-setuptools, 65.6.0.2, Apache-2.0 license, https://github.com/python/typeshed, Server, No
+types-six, 1.16.21.4, Apache-2.0 license, https://github.com/python/typeshed, Server, No
+types-urllib3, 1.26.25.4, Apache-2.0 license, https://github.com/python/typeshed, Server, No
+typing-extensions, 4.4.0, (Licence not found), (Home-page not found), Server, No
+typing-inspect, 0.8.0, MIT, https://github.com/ilevkivskyi/typing_inspect, Server, No
+urllib3, 1.26.13, MIT, https://urllib3.readthedocs.io/, Server, No
+varint, 1.0.2, MIT, http://github.com/fmoo/python-varint, Server, No
+virtualenv, 20.17.1, MIT, https://virtualenv.pypa.io/, Server, No
+web3, 5.31.3, MIT, https://github.com/ethereum/web3.py, Server, No
+websockets, 9.1, BSD, https://github.com/aaugustin/websockets, Server, No
+wheel, 0.38.4, MIT, https://github.com/pypa/wheel, Server, No
+wrapt, 1.14.1, BSD, https://github.com/GrahamDumpleton/wrapt, Server, No
+yarl, 1.8.2, Apache 2, https://github.com/aio-libs/yarl/, Server, No
+zipp, 3.11.0, (Licence not found), https://github.com/jaraco/zipp, Server, No
