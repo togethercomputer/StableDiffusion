@@ -59,15 +59,11 @@ class FastStableDiffusion(FastInferenceInterface):
             )
             self.pipe_text2image.enable_xformers_memory_efficient_attention()
 
-        self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
-        self.inputs = self.options.get("input", "").split(",")
-
-        if "image" in self.inputs:
-            # use from_pipe to avoid consuming additional memory when loading a checkpoint
-            self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
-                self.pipe_text2image
-            ).to(self.device)
-            self.pipe_image2image.enable_xformers_memory_efficient_attention()
+        # use from_pipe to avoid consuming additional memory when loading a checkpoint
+        self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
+            self.pipe_text2image
+        ).to(self.device)
+        self.pipe_image2image.enable_xformers_memory_efficient_attention()
 
         # Commenting out for now
         # TODO: add support for inpainting
@@ -95,7 +91,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 if not self.pipe_image2image:
                     raise Exception("Image prompts not supported")
 
-                init_image = load_image(image_input).convert("RGB")
+                init_image = Image.open(BytesIO(base64.b64decode(image_input))).convert("RGB")
                 init_image.thumbnail((768, 768))
 
                 output = self.pipe_image2image(
