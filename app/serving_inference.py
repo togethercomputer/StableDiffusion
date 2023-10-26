@@ -38,7 +38,13 @@ class FastStableDiffusion(FastInferenceInterface):
         self.model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
         print("init MODEL", self.model)
 
+        # removed, if "image" in self.inputs: as condition to use from_pipe because
+        self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
+        self.inputs = self.options.get("input", "").split(",")
+        print(self.options, self.inputs) # this is: {} [''] 
+
         if self.model == "stabilityai/stable-diffusion-xl-base-1.0":
+            print("StableDiffusionXLPipeline")
             self.pipe_text2image = StableDiffusionXLPipeline.from_pretrained(
                 self.model,
                 torch_dtype=torch.float16,
@@ -49,7 +55,16 @@ class FastStableDiffusion(FastInferenceInterface):
                 device_map="auto" if self.device == "cuda" else self.device,
             )
             self.pipe_text2image.enable_xformers_memory_efficient_attention()
+
+            # the image2image model for SDXL is not the same as the text2image
+            print("stabilityai/stable-diffusion-xl-refiner-1.0")
+            self.pipe_image2image = AutoPipelineForImage2Image.from_pretrained(
+                "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float16
+            ).to(self.device)
+            self.pipe_image2image.enable_xformers_memory_efficient_attention()
+
         else:
+            print("StableDiffusionPipeline")
             self.pipe_text2image = StableDiffusionPipeline.from_pretrained(
                 self.model,
                 torch_dtype=torch.float16,
@@ -58,9 +73,8 @@ class FastStableDiffusion(FastInferenceInterface):
                 device_map="auto" if self.device == "cuda" else self.device,
             )
             self.pipe_text2image.enable_xformers_memory_efficient_attention()
-        self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
-        self.inputs = self.options.get("input", "").split(",")
-        if "image" in self.inputs:
+
+            print("AutoPipelineForImage2Image.from_pipe")
             # use from_pipe to avoid consuming additional memory when loading a checkpoint
             self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
                 self.pipe_text2image
@@ -80,24 +94,27 @@ class FastStableDiffusion(FastInferenceInterface):
             print("ARGS:", args[0])
             prompt = args[0]["prompt"]
             negative_prompt = args[0].get("negative_prompt", None)
-            if negative_prompt is not None:
-                negative_prompt = (
-                    negative_prompt
-                    if isinstance(negative_prompt, list)
-                    else [negative_prompt]
-                )
+
+            # if prompt is a list and negative_prompt=None, it causes
+            # "TypeError: `negative_prompt` should be the same type to `prompt`, but got <class 'str'> != <class 'list'>."
+            # so removed forcing these to both be list
+
             seed = args[0].get("seed")
             generator = torch.Generator(self.device).manual_seed(seed) if seed else None
             image_input = args[0].get("image_base64")
             if image_input:
+                print("pipe_image2image")
                 if not self.pipe_image2image:
                     raise Exception("Image prompts not supported")
 
                 init_image = Image.open(BytesIO(base64.b64decode(image_input))).convert("RGB")
                 init_image.thumbnail((768, 768))
 
+                # print("negative_prompt", negative_prompt, "type(negative_prompt)", type(negative_prompt))
+                # print("prompt", prompt, "type(prompt)", type(prompt))
+
                 output = self.pipe_image2image(
-                    prompt if isinstance(prompt, list) else [prompt],
+                    prompt=prompt,
                     negative_prompt=negative_prompt,
                     image=init_image,
                     generator=generator,
@@ -107,6 +124,7 @@ class FastStableDiffusion(FastInferenceInterface):
                     strength=args[0].get("strength", 0.75),  # must be between 0 and 1
                 )
             else:
+                print("pipe_text2image")
                 output = self.pipe_text2image(
                     prompt if isinstance(prompt, list) else [prompt],
                     negative_prompt=negative_prompt,
