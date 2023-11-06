@@ -50,11 +50,11 @@ class FastStableDiffusion(FastInferenceInterface):
         if 'llava' in self.model:
             self.tokenizer, self.model, self.image_processor, self.context_len = \
             load_pretrained_model(
-                model_path = "liuhaotian/llava-v1.5-13b", 
+                model_path = self.model, 
                 model_base = None,
-                model_name = "llava-v1.5-13b",
-                device_map = "auto",
-                device = "cuda"
+                model_name = self.model.split('/')[-1],
+                device_map = "auto" if self.device == "cuda" else self.device,
+                device = self.device
             )
             print('loaded liuhaotian/llava-v1.5-13b')
             self.modality = "text-img2text"
@@ -115,9 +115,10 @@ class FastStableDiffusion(FastInferenceInterface):
                 stop_str = args[0].get("stop", '</s>')
                 do_sample = True if temperature > 0.001 else False
 
-                prompt = "A chat between a curious human and an artificial intelligence assistant. "+\
-                "The assistant gives helpful, detailed, and polite answers to the human's questions. "+\
-                f"USER: <image>\n{prompt} ASSISTANT:"
+                pre_prompt = "A chat between a curious human and an artificial intelligence assistant. "+\
+                "The assistant gives helpful, detailed, and polite answers to the human's questions. "
+                pre_prompt = args[0].get("pre_prompt", pre_prompt)
+                prompt = pre_prompt + f"USER: <image>\n{prompt} ASSISTANT:"
 
                 replace_token = DEFAULT_IMAGE_TOKEN
                 prompt = prompt.replace(DEFAULT_IMAGE_TOKEN, replace_token)
@@ -173,12 +174,12 @@ class FastStableDiffusion(FastInferenceInterface):
                         else [negative_prompt]
                     )
                 
-                if image_input:
+                if image_base64:
                     generator = torch.Generator(self.device).manual_seed(seed) if seed else None
                     if not self.pipe_image2image:
                         raise Exception("Image prompts not supported")
 
-                    init_image = Image.open(BytesIO(base64.b64decode(image_input))).convert("RGB")
+                    init_image = Image.open(BytesIO(base64.b64decode(image_base64))).convert("RGB")
                     init_image.thumbnail((768, 768))
 
                     output = self.pipe_image2image(
