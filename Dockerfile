@@ -48,7 +48,7 @@ RUN pip install pytest matplotlib jupyter ipython ipdb gpustat spacy munch opt_e
 
 # Core packages
 RUN pip install torch==2.0.1 transformers==4.31.0 datasets==2.5.1 accelerate==0.21.0 \
-    && torchvision==0.15.2 tokenizers==0.13.3 entencepiece==0.1.99 peft==0.4.0 \
+    && torchvision==0.15.2 tokenizers==0.13.3 sentencepiece==0.1.99 peft==0.4.0 \
     && bitsandbytes==0.41.0 einops==0.6.1 timm==0.6.13
 
 # # Install FlashAttention
