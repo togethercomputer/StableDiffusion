@@ -102,8 +102,8 @@ class FastStableDiffusion(FastInferenceInterface):
             print("ARGS:", args[0])
 
             prompt = args[0]["prompt"]
-            seed = args[0].get("seed")
-            image_input = args[0].get("image_base64")
+            seed = args[0].get("seed",42)
+            image_base64 = args[0].get("image_base64")
             
 
             if self.modality == "text-img2text":
@@ -128,7 +128,7 @@ class FastStableDiffusion(FastInferenceInterface):
                 num_image_tokens = prompt.count(replace_token) * self.model.get_vision_tower().num_patches
                 max_new_tokens = min(max_new_tokens, max_context_length - input_ids.shape[-1] - num_image_tokens)
                 
-                images = [load_image_from_base64(image) for image in image_input]
+                images = [load_image_from_base64(image_base64)]
                 images = process_images(images, self.image_processor, self.model.config)
                 if type(images) is list:
                     images = [image.to(self.model.device, dtype=torch.float16) for image in images]
