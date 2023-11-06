@@ -58,36 +58,36 @@ class FastStableDiffusion(FastInferenceInterface):
             )
             print('loaded liuhaotian/llava-v1.5-13b')
             self.modality = "text-img2text"
-            pass
-
-        if self.model == "stabilityai/stable-diffusion-xl-base-1.0":
-            self.pipe_text2image = StableDiffusionXLPipeline.from_pretrained(
-                self.model,
-                torch_dtype=torch.float16,
-                revision=model_revision,
-                use_auth_token=args.get("auth_token"),
-                use_safetensors=True,
-                variant="fp16",
-                device_map="auto" if self.device == "cuda" else self.device,
-            )
-            self.pipe_text2image.enable_xformers_memory_efficient_attention()
         else:
-            self.pipe_text2image = StableDiffusionPipeline.from_pretrained(
-                self.model,
-                torch_dtype=torch.float16,
-                revision=model_revision,
-                use_auth_token=args.get("auth_token"),
-                device_map="auto" if self.device == "cuda" else self.device,
-            )
-            self.pipe_text2image.enable_xformers_memory_efficient_attention()
-        self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
-        self.inputs = self.options.get("input", "").split(",")
-        if "image" in self.inputs:
-            # use from_pipe to avoid consuming additional memory when loading a checkpoint
-            self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
-                self.pipe_text2image
-            ).to(self.device)
-            self.pipe_image2image.enable_xformers_memory_efficient_attention()
+
+            if self.model == "stabilityai/stable-diffusion-xl-base-1.0":
+                self.pipe_text2image = StableDiffusionXLPipeline.from_pretrained(
+                    self.model,
+                    torch_dtype=torch.float16,
+                    revision=model_revision,
+                    use_auth_token=args.get("auth_token"),
+                    use_safetensors=True,
+                    variant="fp16",
+                    device_map="auto" if self.device == "cuda" else self.device,
+                )
+                self.pipe_text2image.enable_xformers_memory_efficient_attention()
+            else:
+                self.pipe_text2image = StableDiffusionPipeline.from_pretrained(
+                    self.model,
+                    torch_dtype=torch.float16,
+                    revision=model_revision,
+                    use_auth_token=args.get("auth_token"),
+                    device_map="auto" if self.device == "cuda" else self.device,
+                )
+                self.pipe_text2image.enable_xformers_memory_efficient_attention()
+            self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
+            self.inputs = self.options.get("input", "").split(",")
+            if "image" in self.inputs:
+                # use from_pipe to avoid consuming additional memory when loading a checkpoint
+                self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
+                    self.pipe_text2image
+                ).to(self.device)
+                self.pipe_image2image.enable_xformers_memory_efficient_attention()
 
         # Commenting out for now
         # TODO: add support for inpainting
@@ -114,8 +114,6 @@ class FastStableDiffusion(FastInferenceInterface):
                 max_new_tokens = min(int(args[0].get("max_new_tokens", 256)), 1024)
                 stop_str = args[0].get("stop", '</s>')
                 do_sample = True if temperature > 0.001 else False
-                keywords = [stop_str]
-                input_ids = tokenizer_image_token(prompt, self.tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(self.model.device)
 
                 prompt = "A chat between a curious human and an artificial intelligence assistant. "+\
                 "The assistant gives helpful, detailed, and polite answers to the human's questions. "+\
@@ -123,6 +121,10 @@ class FastStableDiffusion(FastInferenceInterface):
 
                 replace_token = DEFAULT_IMAGE_TOKEN
                 prompt = prompt.replace(DEFAULT_IMAGE_TOKEN, replace_token)
+
+                # tokenize the filled-in prompt 
+                input_ids = tokenizer_image_token(prompt, self.tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(self.model.device)
+
                 num_image_tokens = prompt.count(replace_token) * self.model.get_vision_tower().num_patches
                 max_new_tokens = min(max_new_tokens, max_context_length - input_ids.shape[-1] - num_image_tokens)
                 
@@ -134,6 +136,7 @@ class FastStableDiffusion(FastInferenceInterface):
                     images = images.to(self.model.device, dtype=torch.float16)
                 image_args = {"images": images}
 
+                keywords = [stop_str]
                 stopping_criteria = KeywordsStoppingCriteria(keywords, self.tokenizer, input_ids)
                 streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True, timeout=15)
                 thread = Thread(target=self.model.generate, kwargs=dict(
