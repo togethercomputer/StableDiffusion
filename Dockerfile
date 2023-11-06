@@ -43,11 +43,13 @@ WORKDIR /home/user
 ENV PIP_NO_CACHE_DIR=1
 
 # General packages that we don't care about the version
-RUN pip install pytest matplotlib jupyter ipython ipdb gpustat scikit-learn spacy munch einops opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker diffusers[torch] \
+RUN pip install pytest matplotlib jupyter ipython ipdb gpustat spacy munch opt_einsum fvcore gsutil cmake pykeops together_web3 together_worker diffusers[torch] \
     && python -m spacy download en_core_web_sm
 
 # Core packages
-RUN pip install transformers==4.30.2 datasets==2.5.1 accelerate
+RUN pip install torch==2.0.1 transformers==4.31.0 datasets==2.5.1 accelerate==0.21.0 \
+    && torchvision==0.15.2 tokenizers==0.13.3 entencepiece==0.1.99 peft==0.4.0 \
+    && bitsandbytes==0.41.0 einops==0.6.1 timm==0.6.13
 
 # # Install FlashAttention
 RUN pip3 install --no-cache-dir \
