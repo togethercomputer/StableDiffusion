@@ -153,13 +153,14 @@ class FastStableDiffusion(FastInferenceInterface):
                 ))
                 thread.start()
 
-                generated_text = prompt
+                generated_text = ""
                 for new_text in streamer:
                     generated_text += new_text
                     if generated_text.endswith(stop_str):
                         generated_text = generated_text[:-len(stop_str)]
 
                 return {
+                    "prompt" : prompt,
                     "generated_text" : generated_text
                 }
 
