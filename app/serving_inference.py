@@ -113,7 +113,7 @@ class FastStableDiffusion(FastInferenceInterface):
             seed = args[0].get("seed",42)
             image_base64 = args[0].get("image_base64")
             
-            if self.modality == "text-img2text":
+            if self.modality == "text+img2text":
 
                 temperature = float(args[0].get("temperature", 0.2))
                 top_p = float(args[0].get("top_p", 0.7))
