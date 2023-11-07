@@ -11,7 +11,7 @@ from transformers import TextIteratorStreamer
 
 from llava.model.builder import load_pretrained_model
 from llava.mm_utils import process_images, load_image_from_base64, tokenizer_image_token, KeywordsStoppingCriteria
-from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
+from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN
 
 from diffusers import (
     StableDiffusionPipeline,
@@ -45,9 +45,20 @@ class FastStableDiffusion(FastInferenceInterface):
         self.model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
         print("init MODEL", self.model)
 
-        self.modality = "text2img"
+        self.inputs = self.options.get("input", "").split(",")
+        print("self.inputs", self.inputs)
+
+        self.options = parse_tags(os.environ.get("MODEL_OPTIONS")) 
+        print("self.options", self.options)
 
         if 'llava' in self.model:
+            self.modality = "text+img2text"
+        if "image" in self.inputs:
+             self.modality = "img2img"
+        else:
+            self.modality = "text2img"
+        
+        if ('llava' in self.model) and (self.modality == "text+img2text"):
             self.tokenizer, self.model, self.image_processor, self.context_len = \
             load_pretrained_model(
                 model_path = self.model, 
@@ -57,37 +68,35 @@ class FastStableDiffusion(FastInferenceInterface):
                 device = self.device
             )
             print('loaded liuhaotian/llava-v1.5-13b')
-            self.modality = "text-img2text"
-        else:
 
-            if self.model == "stabilityai/stable-diffusion-xl-base-1.0":
-                self.pipe_text2image = StableDiffusionXLPipeline.from_pretrained(
-                    self.model,
-                    torch_dtype=torch.float16,
-                    revision=model_revision,
-                    use_auth_token=args.get("auth_token"),
-                    use_safetensors=True,
-                    variant="fp16",
-                    device_map="auto" if self.device == "cuda" else self.device,
-                )
-                self.pipe_text2image.enable_xformers_memory_efficient_attention()
-            else:
-                self.pipe_text2image = StableDiffusionPipeline.from_pretrained(
-                    self.model,
-                    torch_dtype=torch.float16,
-                    revision=model_revision,
-                    use_auth_token=args.get("auth_token"),
-                    device_map="auto" if self.device == "cuda" else self.device,
-                )
-                self.pipe_text2image.enable_xformers_memory_efficient_attention()
-            self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
-            self.inputs = self.options.get("input", "").split(",")
-            if "image" in self.inputs:
-                # use from_pipe to avoid consuming additional memory when loading a checkpoint
-                self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
-                    self.pipe_text2image
-                ).to(self.device)
-                self.pipe_image2image.enable_xformers_memory_efficient_attention()
+        if self.model == "stabilityai/stable-diffusion-xl-base-1.0":
+            self.pipe_text2image = StableDiffusionXLPipeline.from_pretrained(
+                self.model,
+                torch_dtype=torch.float16,
+                revision=model_revision,
+                use_auth_token=args.get("auth_token"),
+                use_safetensors=True,
+                variant="fp16",
+                device_map="auto" if self.device == "cuda" else self.device,
+            )
+            self.pipe_text2image.enable_xformers_memory_efficient_attention()
+
+        elif self.modality == "text2img":
+            self.pipe_text2image = StableDiffusionPipeline.from_pretrained(
+                self.model,
+                torch_dtype=torch.float16,
+                revision=model_revision,
+                use_auth_token=args.get("auth_token"),
+                device_map="auto" if self.device == "cuda" else self.device,
+            )
+            self.pipe_text2image.enable_xformers_memory_efficient_attention()
+
+        if self.modality == "img2img":
+            # use from_pipe to avoid consuming additional memory when loading a checkpoint
+            self.pipe_image2image = AutoPipelineForImage2Image.from_pipe(
+                self.pipe_text2image
+            ).to(self.device)
+            self.pipe_image2image.enable_xformers_memory_efficient_attention()
 
         # Commenting out for now
         # TODO: add support for inpainting
@@ -105,7 +114,6 @@ class FastStableDiffusion(FastInferenceInterface):
             seed = args[0].get("seed",42)
             image_base64 = args[0].get("image_base64")
             
-
             if self.modality == "text-img2text":
 
                 temperature = float(args[0].get("temperature", 0.2))
@@ -115,16 +123,16 @@ class FastStableDiffusion(FastInferenceInterface):
                 stop_str = args[0].get("stop", '</s>')
                 do_sample = True if temperature > 0.001 else False
 
-                pre_prompt = "A chat between a curious human and an artificial intelligence assistant. "+\
-                "The assistant gives helpful, detailed, and polite answers to the human's questions. "
-                pre_prompt = args[0].get("pre_prompt", pre_prompt)
-                prompt = pre_prompt + f"USER: <image>\n{prompt} ASSISTANT:"
-
                 replace_token = DEFAULT_IMAGE_TOKEN
                 prompt = prompt.replace(DEFAULT_IMAGE_TOKEN, replace_token)
 
                 # tokenize the filled-in prompt 
-                input_ids = tokenizer_image_token(prompt, self.tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(self.model.device)
+                input_ids = tokenizer_image_token(
+                    prompt, 
+                    self.tokenizer, 
+                    IMAGE_TOKEN_INDEX, 
+                    return_tensors='pt'
+                ).unsqueeze(0).to(self.model.device)
 
                 num_image_tokens = prompt.count(replace_token) * self.model.get_vision_tower().num_patches
                 max_new_tokens = min(max_new_tokens, max_context_length - input_ids.shape[-1] - num_image_tokens)
@@ -164,7 +172,9 @@ class FastStableDiffusion(FastInferenceInterface):
                     "generated_text" : generated_text
                 }
 
-            else:
+            if self.modality in ["img2img", "text2img"]:
+
+                generator = torch.Generator(self.device).manual_seed(seed) if seed else None
             
                 negative_prompt = args[0].get("negative_prompt", None)
 
@@ -176,7 +186,7 @@ class FastStableDiffusion(FastInferenceInterface):
                     )
                 
                 if image_base64:
-                    generator = torch.Generator(self.device).manual_seed(seed) if seed else None
+                    
                     if not self.pipe_image2image:
                         raise Exception("Image prompts not supported")
 
