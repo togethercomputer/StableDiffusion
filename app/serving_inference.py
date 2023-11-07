@@ -52,7 +52,7 @@ class FastStableDiffusion(FastInferenceInterface):
 
         if 'llava' in self.model:
             self.modality = "text+img2text"
-        if "image" in self.inputs:
+        elif "image" in self.inputs:
              self.modality = "img2img"
         else:
             self.modality = "text2img"
