@@ -45,10 +45,9 @@ class FastStableDiffusion(FastInferenceInterface):
         self.model = os.environ.get("MODEL", "runwayml/stable-diffusion-v1-5")
         print("init MODEL", self.model)
 
+        self.options = parse_tags(os.environ.get("MODEL_OPTIONS"))
         self.inputs = self.options.get("input", "").split(",")
         print("self.inputs", self.inputs)
-
-        self.options = parse_tags(os.environ.get("MODEL_OPTIONS")) 
         print("self.options", self.options)
 
         if 'llava' in self.model:
