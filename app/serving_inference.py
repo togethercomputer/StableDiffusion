@@ -122,6 +122,8 @@ class FastStableDiffusion(FastInferenceInterface):
                 max_new_tokens = min(int(args[0].get("max_new_tokens", 256)), 1024)
                 stop_str = args[0].get("stop", '</s>')
                 do_sample = True if temperature > 0.001 else False
+                num_beams = args[0].get("num_beams", 1)
+                
 
                 replace_token = DEFAULT_IMAGE_TOKEN
                 prompt = prompt.replace(DEFAULT_IMAGE_TOKEN, replace_token)
@@ -144,25 +146,24 @@ class FastStableDiffusion(FastInferenceInterface):
                     self.model.config
                 ).to(self.model.device, dtype=torch.float16)
 
-                keywords = [stop_str]
-                stopping_criteria = KeywordsStoppingCriteria(keywords, self.tokenizer, input_ids)
+                stopping_criteria = KeywordsStoppingCriteria([stop_str], self.tokenizer, input_ids)
                 
                 with torch.inference_mode():
                     output_ids = self.model.generate(
                         input_ids,
                         images=images_tensor,
-                        do_sample=True,
-                        temperature=0.2,
-                        top_p=None,
-                        num_beams=1,
-                        max_new_tokens=512,
+                        do_sample=do_sample,
+                        temperature=temperature,
+                        top_p=top_p,
+                        num_beams=num_beams,
+                        max_new_tokens=max_new_tokens,
                         use_cache=True,
                         stopping_criteria=[stopping_criteria],
                     )
 
                 input_token_len = input_ids.shape[1]
                 n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
-                
+
                 if n_diff_input_output > 0:
                     print(f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids")
 
