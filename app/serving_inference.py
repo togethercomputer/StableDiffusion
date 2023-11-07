@@ -137,39 +137,40 @@ class FastStableDiffusion(FastInferenceInterface):
                 num_image_tokens = prompt.count(replace_token) * self.model.get_vision_tower().num_patches
                 max_new_tokens = min(max_new_tokens, max_context_length - input_ids.shape[-1] - num_image_tokens)
                 
-                images = [load_image_from_base64(image_base64)]
-                images = process_images(images, self.image_processor, self.model.config)
-                if type(images) is list:
-                    images = [image.to(self.model.device, dtype=torch.float16) for image in images]
-                else:
-                    images = images.to(self.model.device, dtype=torch.float16)
-                image_args = {"images": images}
+                images = [load_image_from_base64(i) for i in image_base64]
+                images_tensor = process_images(
+                    images,
+                    self.image_processor,
+                    self.model.config
+                ).to(self.model.device, dtype=torch.float16)
 
                 keywords = [stop_str]
                 stopping_criteria = KeywordsStoppingCriteria(keywords, self.tokenizer, input_ids)
-                streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True, timeout=15)
-                thread = Thread(target=self.model.generate, kwargs=dict(
-                    inputs=input_ids,
-                    do_sample=do_sample,
-                    temperature=temperature,
-                    top_p=top_p,
-                    max_new_tokens=max_new_tokens,
-                    streamer=streamer,
-                    stopping_criteria=[stopping_criteria],
-                    use_cache=True,
-                    **image_args
-                ))
-                thread.start()
+                
+                with torch.inference_mode():
+                    output_ids = self.model.generate(
+                        input_ids,
+                        images=images_tensor,
+                        do_sample=True,
+                        temperature=0.2,
+                        top_p=None,
+                        num_beams=1,
+                        max_new_tokens=512,
+                        use_cache=True,
+                        stopping_criteria=[stopping_criteria],
+                    )
 
-                generated_text = ""
-                for new_text in streamer:
-                    generated_text += new_text
-                    if generated_text.endswith(stop_str):
-                        generated_text = generated_text[:-len(stop_str)]
+                input_token_len = input_ids.shape[1]
+                n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
+                
+                if n_diff_input_output > 0:
+                    print(f"[Warning] {n_diff_input_output} output_ids are not the same as the input_ids")
+
+                outputs = self.tokenizer.batch_decode(output_ids[:, input_token_len:], skip_special_tokens=True)[0]
 
                 return {
                     "prompt" : prompt,
-                    "generated_text" : generated_text
+                    "outputs" : outputs
                 }
 
             if self.modality in ["img2img", "text2img"]:
